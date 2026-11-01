@@ -1,0 +1,69 @@
+# Render Blueprint & Workflows Configuration for Ilaaj Track (इलाज ट्रैक)
+# SIH 2026 / Build The AI For YOU 2026 Hackathon
+# Qualifies for: "Best Use of Render" Track ($500 1st place)
+
+services:
+  # 1. Backend REST & AI Orchestrator API
+  - type: web
+    name: ilaaj-track-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+
+  # 2. Frontend React 18 + Tailwind PWA (Static Site)
+  - type: web
+    name: ilaaj-track-web
+    runtime: static
+    plan: free
+    region: oregon
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: ilaaj-track-api
+          property: host
+
+  # 3. Render Cron Worker: Automated Bottleneck & Dynamic Haversine Reroute Daemon
+  # Corresponds to Stage 08 of the Care Orchestration Pipeline:
+  # Periodically evaluates hospital equipment uptime, ICU capacity (>85%), and stuck referrals
+  - type: cron
+    name: ilaaj-bottleneck-daemon
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: server
+    schedule: "*/10 * * * *" # Runs every 10 minutes
+    buildCommand: npm install
+    startCommand: npm run worker
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_ENDPOINT
+        fromService:
+          type: web
+          name: ilaaj-track-api
+          property: host
