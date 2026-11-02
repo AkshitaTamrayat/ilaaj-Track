@@ -3,7 +3,7 @@
 # Qualifies for: "Best Use of Render" Track ($500 1st place)
 
 services:
-  # 1. Backend REST & AI Orchestrator API
+  # 1. Backend REST & AI Orchestrator API (Free Web Service)
   - type: web
     name: ilaaj-track-api
     runtime: node
@@ -27,12 +27,11 @@ services:
       - key: SUPABASE_ANON_KEY
         sync: false
 
-  # 2. Frontend React 18 + Tailwind PWA (Static Site)
+  # 2. Frontend React 18 + Tailwind PWA (Static Site on Global CDN Edge)
+  # Note: Static sites are deployed to Render's global CDN automatically (no region/plan needed)
   - type: web
     name: ilaaj-track-web
     runtime: static
-    plan: free
-    region: oregon
     rootDir: client
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
@@ -48,12 +47,11 @@ services:
           property: host
 
   # 3. Render Cron Worker: Automated Bottleneck & Dynamic Haversine Reroute Daemon
-  # Corresponds to Stage 08 of the Care Orchestration Pipeline:
-  # Periodically evaluates hospital equipment uptime, ICU capacity (>85%), and stuck referrals
+  # Uses the $50 free hackathon credits (Render cron jobs require starter plan)
   - type: cron
     name: ilaaj-bottleneck-daemon
     runtime: node
-    plan: free
+    plan: starter
     region: oregon
     rootDir: server
     schedule: "*/10 * * * *" # Runs every 10 minutes
