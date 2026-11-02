@@ -407,13 +407,17 @@ app.post('/api/referrals/:id/advance', (req, res) => {
 
 // Serve Vite static frontend in production
 const clientDistPath = path.join(__dirname, '../client/dist');
-if (fs.existsSync(clientDistPath)) {
-  app.use(express.static(clientDistPath));
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(clientDistPath, 'index.html'));
-  });
-}
+console.log('[Ilaaj Track] Static frontend path:', clientDistPath, 'Exists:', fs.existsSync(clientDistPath));
+
+app.use(express.static(clientDistPath));
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  const indexPath = path.join(clientDistPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  res.status(200).send('<h1>Ilaaj Track API Engine is Live</h1><p>API status: <a href="/api/health">/api/health</a></p>');
+});
 
 app.listen(PORT, () => {
   console.log(`[Ilaaj Track API] Server running on http://localhost:${PORT}`);
