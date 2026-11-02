@@ -207,6 +207,35 @@ Return a strict JSON response conforming exactly to this structure:
   }
 });
 
+// 1b. Groq Whisper Indic Voice Transcription (Sub-second Audio STT)
+app.post('/api/triage/transcribe', upload.single('audioFile'), async (req, res) => {
+  try {
+    const groqKey = process.env.GROQ_API_KEY;
+    if (groqKey && req.file) {
+      const formData = new FormData();
+      const blob = new Blob([req.file.buffer], { type: req.file.mimetype || 'audio/webm' });
+      formData.append('file', blob, 'audio.webm');
+      formData.append('model', 'whisper-large-v3-turbo');
+      formData.append('prompt', 'Transcribe native Indian rural healthcare symptoms in Hindi or Marathi.');
+
+      const groqRes = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${groqKey}`
+        },
+        body: formData
+      });
+      const data = await groqRes.json();
+      if (data.text) {
+        return res.json({ success: true, text: data.text, provider: 'Groq Whisper Large v3 Turbo' });
+      }
+    }
+    res.json({ success: false, error: 'No audio received or Groq transcription failed' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // 2. Prescription Slip Multimodal Vision OCR
 app.post('/api/triage/ocr', upload.single('slipImage'), async (req, res) => {
   try {
