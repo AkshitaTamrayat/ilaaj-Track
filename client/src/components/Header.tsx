@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = () => {
               </span>
             </div>
             <span className="text-xs font-medium text-slate-500 mt-1">
-              Primary Health Center & Referral Portal
+              Rural Health Portal & Family Records
             </span>
           </div>
           <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800">

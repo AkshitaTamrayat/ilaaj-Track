@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
+import { FamilyHealthSection } from './components/FamilyHealthSection';
 import { VoiceTriageSection } from './components/VoiceTriageSection';
 import { DynamicMapSection } from './components/DynamicMapSection';
 import { CasualtySection } from './components/CasualtySection';
@@ -9,7 +10,7 @@ import { fetchFacilities, fetchReferrals, createReferral } from './services/api'
 import type { Facility, Referral } from './types';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState('triage');
+  const [activeTab, setActiveTab] = useState('family');
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,6 +73,10 @@ export function App() {
             </div>
           ) : (
             <div>
+              {activeTab === 'family' && (
+                <FamilyHealthSection />
+              )}
+
               {activeTab === 'triage' && (
                 <VoiceTriageSection onReferralCreated={handleReferralCreated} />
               )}

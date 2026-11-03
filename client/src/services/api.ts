@@ -236,3 +236,89 @@ export async function transcribeAudio(audioBlob: Blob): Promise<{ success: boole
     return { success: false, error: err.message };
   }
 }
+
+// ==========================================
+// Family Health Locker APIs (परिवार स्वास्थ्य खाता)
+// ==========================================
+
+export async function fetchFamilyMembers() {
+  try {
+    const res = await fetch(`${API_BASE}/family-members`);
+    if (!res.ok) throw new Error('Failed to load family members');
+    const data = await res.json();
+    return data.familyMembers;
+  } catch (err) {
+    console.warn('Using local fallback for family members:', err);
+    return [];
+  }
+}
+
+export async function addFamilyMember(memberData: any) {
+  try {
+    const res = await fetch(`${API_BASE}/family-members`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(memberData)
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Error adding family member:', err);
+    return { success: false };
+  }
+}
+
+export async function addPrescription(memberId: string, rxData: any) {
+  try {
+    const res = await fetch(`${API_BASE}/family-members/${memberId}/prescriptions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(rxData)
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Error adding prescription:', err);
+    return { success: false };
+  }
+}
+
+export async function addLabReport(memberId: string, reportData: any) {
+  try {
+    const res = await fetch(`${API_BASE}/family-members/${memberId}/reports`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reportData)
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Error adding lab report:', err);
+    return { success: false };
+  }
+}
+
+export async function addCheckup(memberId: string, checkupData: any) {
+  try {
+    const res = await fetch(`${API_BASE}/family-members/${memberId}/checkups`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(checkupData)
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Error adding checkup:', err);
+    return { success: false };
+  }
+}
+
+export async function toggleCheckup(memberId: string, checkupId: string, status?: string) {
+  try {
+    const res = await fetch(`${API_BASE}/family-members/${memberId}/checkups/${checkupId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Error toggling checkup:', err);
+    return { success: false };
+  }
+}

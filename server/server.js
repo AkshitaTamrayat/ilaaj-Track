@@ -111,6 +111,276 @@ let referrals = [
   }
 ];
 
+let familyMembers = [
+  {
+    id: 'fam-ramesh',
+    name: 'Ramesh Patil (रमेश पाटिल)',
+    relation: 'Self',
+    age: 52,
+    gender: 'Male',
+    bloodGroup: 'B+',
+    abhaId: '91-4432-8871-0921',
+    village: 'Semadoh, Melghat Block',
+    chronicConditions: ['Hypertension (उच्च रक्तचाप)', 'Type-2 Diabetes (मधुमेह)'],
+    prescriptions: [
+      {
+        id: 'rx-ramesh-1',
+        date: '24 Oct 2026',
+        doctorName: 'Dr. S. K. Deshmukh (MBBS, MD - Civil Hospital)',
+        facilityName: 'District Hospital Amravati',
+        diagnosis: 'Essential Hypertension & Poorly Controlled Blood Sugar',
+        medicines: [
+          { name: 'Tab. Telmisartan 40mg', dosage: '40mg', frequency: '1-0-0 (सुबह नाश्ते के बाद)', duration: '30 Days', instructions: 'Take with warm water' },
+          { name: 'Tab. Metformin 500mg SR', dosage: '500mg', frequency: '1-0-1 (सुबह व रात भोजन के साथ)', duration: '30 Days', instructions: 'Do not skip' },
+          { name: 'Tab. Atorvastatin 10mg', dosage: '10mg', frequency: '0-0-1 (रात को सोने से पहले)', duration: '30 Days', instructions: 'For cholesterol control' }
+        ],
+        investigations: ['Fasting Blood Sugar', 'Serum Creatinine', '12-Lead ECG'],
+        notes: 'Advised morning walk 30 mins, reduce salt & oily food.'
+      },
+      {
+        id: 'rx-ramesh-2',
+        date: '10 Sep 2026',
+        doctorName: 'Dr. Anjali Kulkarni (Medical Officer)',
+        facilityName: 'PHC Semadoh',
+        diagnosis: 'Routine Non-Communicable Disease (NCD) Follow-up',
+        medicines: [
+          { name: 'Tab. Telmisartan 40mg', dosage: '40mg', frequency: '1-0-0 (सुबह)', duration: '30 Days' },
+          { name: 'Tab. Glimepiride 1mg', dosage: '1mg', frequency: '1-0-0 (सुबह नाश्ते से 15 मिनट पहले)', duration: '30 Days' }
+        ],
+        investigations: ['Fasting Blood Glucose'],
+        notes: 'BP recorded 148/94. Salt restriction advised.'
+      }
+    ],
+    labReports: [
+      {
+        id: 'rep-ramesh-1',
+        date: '25 Oct 2026',
+        testName: 'Fasting Blood Sugar & Lipid Profile (रक्त शर्करा जांच)',
+        category: 'BLOOD',
+        facilityName: 'Amravati District Hospital Laboratory',
+        summaryStatus: 'ATTENTION',
+        keyValues: [
+          { parameter: 'Fasting Blood Glucose', value: '168 mg/dL', normalRange: '70 - 100 mg/dL', isAbnormal: true, unit: 'mg/dL' },
+          { parameter: 'Post-Prandial Glucose', value: '232 mg/dL', normalRange: '< 140 mg/dL', isAbnormal: true, unit: 'mg/dL' },
+          { parameter: 'Total Cholesterol', value: '194 mg/dL', normalRange: '< 200 mg/dL', isAbnormal: false, unit: 'mg/dL' },
+          { parameter: 'Serum Creatinine', value: '1.0 mg/dL', normalRange: '0.7 - 1.2 mg/dL', isAbnormal: false, unit: 'mg/dL' }
+        ],
+        doctorRemarks: 'Blood sugar remains elevated. Strict dietary compliance and daily Metformin required.'
+      },
+      {
+        id: 'rep-ramesh-2',
+        date: '24 Oct 2026',
+        testName: '12-Lead Resting ECG (हृदय की ईसीजी जांच)',
+        category: 'CARDIAC',
+        facilityName: 'Amravati District Hospital Emergency Ward',
+        summaryStatus: 'NORMAL',
+        keyValues: [
+          { parameter: 'Heart Rate', value: '78 bpm', normalRange: '60 - 100 bpm', isAbnormal: false },
+          { parameter: 'Rhythm', value: 'Normal Sinus Rhythm', normalRange: 'Sinus', isAbnormal: false },
+          { parameter: 'ST Segment', value: 'No acute ischemic changes', normalRange: 'Isoelectric', isAbnormal: false }
+        ],
+        doctorRemarks: 'ECG within normal limits. No acute infarction detected.'
+      }
+    ],
+    checkups: [
+      {
+        id: 'chk-ramesh-1',
+        date: '08 Nov 2026',
+        title: 'Morning Fasting Sugar & BP Check (घर पर जांच)',
+        facilityOrAsha: 'Kavita Meshram (Village ASHA Worker #7702)',
+        status: 'UPCOMING',
+        type: 'ASHA_HOME_VISIT',
+        notes: 'ASHA will bring digital glucometer and BP apparatus to your home.'
+      },
+      {
+        id: 'chk-ramesh-2',
+        date: '22 Nov 2026',
+        title: 'Monthly NCD Clinic Doctor Consultation',
+        facilityOrAsha: 'Achalpur Sub-District Hospital (Room 12)',
+        status: 'UPCOMING',
+        type: 'SPECIALIST_CLINIC',
+        notes: 'Bring all previous prescription slips and latest lab report.'
+      },
+      {
+        id: 'chk-ramesh-3',
+        date: '24 Oct 2026',
+        title: 'Hospital Discharge Post-Emergency Stabilization',
+        facilityOrAsha: 'Amravati District Hospital',
+        status: 'COMPLETED',
+        type: 'PHC_VISIT',
+        notes: 'Patient successfully treated and prescribed 30-day medication bundle.'
+      }
+    ]
+  },
+  {
+    id: 'fam-kamla',
+    name: 'Kamla Devi Patil (कमला देवी पाटिल - माताजी)',
+    relation: 'Mother',
+    age: 74,
+    gender: 'Female',
+    bloodGroup: 'O+',
+    abhaId: '91-1029-4481-7734',
+    village: 'Semadoh, Melghat Block',
+    chronicConditions: ['Bilateral Knee Osteoarthritis (गठिया)', 'Hypertension (उच्च रक्तचाप)'],
+    prescriptions: [
+      {
+        id: 'rx-kamla-1',
+        date: '15 Oct 2026',
+        doctorName: 'Dr. R. V. Joshi (Orthopedic Surgeon)',
+        facilityName: 'Amravati District Hospital',
+        diagnosis: 'Severe Grade-3 Bilateral Knee Osteoarthritis',
+        medicines: [
+          { name: 'Tab. Calcium 500mg + Vit D3', dosage: '500mg', frequency: '1-0-0 (सुबह दूध के साथ)', duration: '60 Days' },
+          { name: 'Tab. Amlodipine 5mg', dosage: '5mg', frequency: '1-0-0 (सुबह)', duration: '30 Days', instructions: 'For blood pressure' },
+          { name: 'Tab. Paracetamol 650mg SOS', dosage: '650mg', frequency: 'जब घुटने में अधिक दर्द हो (अधिकतम 2 बार)', duration: '15 Days' }
+        ],
+        investigations: ['Serum Calcium', 'Bilateral Knee Joint X-Ray (Standing)'],
+        notes: 'Hot fermentation twice daily. Avoid squatting on floor.'
+      }
+    ],
+    labReports: [
+      {
+        id: 'rep-kamla-1',
+        date: '15 Oct 2026',
+        testName: 'Digital X-Ray Bilateral Knees AP & Lateral (घुटने का एक्स-रे)',
+        category: 'IMAGING',
+        facilityName: 'Achalpur Sub-District Hospital Imaging Unit',
+        summaryStatus: 'ATTENTION',
+        keyValues: [
+          { parameter: 'Medial Joint Space', value: 'Severe narrowing', normalRange: 'Adequate', isAbnormal: true },
+          { parameter: 'Osteophytes', value: 'Marginal spurring present', normalRange: 'Absent', isAbnormal: true }
+        ],
+        doctorRemarks: 'Degenerative joint disease confirmed. Supported knee brace recommended.'
+      }
+    ],
+    checkups: [
+      {
+        id: 'chk-kamla-1',
+        date: '10 Nov 2026',
+        title: 'Monthly Knee Mobility & BP Check (घर पर मुलाकात)',
+        facilityOrAsha: 'Kavita Meshram (ASHA Worker)',
+        status: 'UPCOMING',
+        type: 'ASHA_HOME_VISIT',
+        notes: 'Checking knee swelling and blood pressure compliance.'
+      }
+    ]
+  },
+  {
+    id: 'fam-sunita',
+    name: 'Sunita Bai Patil (सुनीता बाई पाटिल - पत्नी)',
+    relation: 'Spouse',
+    age: 48,
+    gender: 'Female',
+    bloodGroup: 'A+',
+    abhaId: '91-5502-3199-8812',
+    village: 'Semadoh, Melghat Block',
+    chronicConditions: ['Iron Deficiency Anemia (खून की कमी)', 'Post-Op Surgical Recovery'],
+    prescriptions: [
+      {
+        id: 'rx-sunita-1',
+        date: '28 Oct 2026',
+        doctorName: 'Dr. Meena Shinde (Gynecologist / Surgeon)',
+        facilityName: 'Achalpur Sub-District Hospital',
+        diagnosis: 'Microcytic Hypochromic Anemia & Post-Surgical Follow-up',
+        medicines: [
+          { name: 'Tab. Iron & Folic Acid (IFA Red Tablet)', dosage: '100mg elemental iron', frequency: '0-1-0 (दोपहर खाने के 1 घंटे बाद)', duration: '90 Days', instructions: 'Do not take with tea or milk' },
+          { name: 'Tab. Vitamin C 500mg', dosage: '500mg', frequency: '0-1-0 (दोपहर)', duration: '30 Days', instructions: 'Aids iron absorption' }
+        ],
+        investigations: ['Repeat Hemoglobin in 30 days', 'Serum Ferritin'],
+        notes: 'Eat green leafy vegetables (palak, methi) and jaggery (gud).'
+      }
+    ],
+    labReports: [
+      {
+        id: 'rep-sunita-1',
+        date: '28 Oct 2026',
+        testName: 'Complete Blood Count - CBC (खून की पूरी जांच)',
+        category: 'BLOOD',
+        facilityName: 'PHC Semadoh Diagnostic Center',
+        summaryStatus: 'ATTENTION',
+        keyValues: [
+          { parameter: 'Hemoglobin (Hb)', value: '9.4 g/dL', normalRange: '12.0 - 15.5 g/dL', isAbnormal: true, unit: 'g/dL' },
+          { parameter: 'Total RBC Count', value: '3.8 mil/uL', normalRange: '4.2 - 5.4 mil/uL', isAbnormal: true, unit: 'mil/uL' },
+          { parameter: 'Platelet Count', value: '2.4 Lakh/uL', normalRange: '1.5 - 4.0 Lakh/uL', isAbnormal: false, unit: 'Lakh/uL' }
+        ],
+        doctorRemarks: 'Moderate nutritional anemia. 3-month course of IFA tablets required.'
+      }
+    ],
+    checkups: [
+      {
+        id: 'chk-sunita-1',
+        date: '06 Nov 2026',
+        title: 'Surgical Wound & IFA Compliance Verification',
+        facilityOrAsha: 'Kavita Meshram (ASHA Worker)',
+        status: 'UPCOMING',
+        type: 'ASHA_HOME_VISIT',
+        notes: 'ASHA verifies iron pill intake and checks dressing healing.'
+      },
+      {
+        id: 'chk-sunita-2',
+        date: '28 Nov 2026',
+        title: 'Repeat Hemoglobin Test at PHC Lab',
+        facilityOrAsha: 'PHC Semadoh Laboratory',
+        status: 'UPCOMING',
+        type: 'PHC_VISIT',
+        notes: 'Target Hb > 11.0 g/dL.'
+      }
+    ]
+  },
+  {
+    id: 'fam-aarav',
+    name: 'Aarav Patil (आरव पाटिल - बेटा)',
+    relation: 'Child',
+    age: 12,
+    gender: 'Male',
+    bloodGroup: 'B+',
+    abhaId: '91-7721-6604-1290',
+    village: 'Semadoh, Melghat Block',
+    chronicConditions: ['Seasonal Bronchial Allergy (मौसम की एलर्जी)'],
+    prescriptions: [
+      {
+        id: 'rx-aarav-1',
+        date: '12 Oct 2026',
+        doctorName: 'Dr. P. N. Verma (Pediatrician)',
+        facilityName: 'Dharni Community Health Centre (CHC)',
+        diagnosis: 'Allergic Rhinitis & Mild Bronchospasm',
+        medicines: [
+          { name: 'Syp. Cetirizine 5mg/5ml', dosage: '5ml', frequency: '0-0-1 (रात को सोने से पहले)', duration: '7 Days' },
+          { name: 'Salbutamol Inhaler 100mcg', dosage: '100mcg', frequency: '2 Puffs SOS (केवल खांसी/सांस फूलने पर)', duration: '30 Days' }
+        ],
+        investigations: ['Routine Pediatric Assessment'],
+        notes: 'Protect from morning dust and cold air.'
+      }
+    ],
+    labReports: [
+      {
+        id: 'rep-aarav-1',
+        date: '12 Oct 2026',
+        testName: 'Pediatric Chest X-Ray PA View (सीने का एक्स-रे)',
+        category: 'IMAGING',
+        facilityName: 'Dharni CHC Radiology Unit',
+        summaryStatus: 'NORMAL',
+        keyValues: [
+          { parameter: 'Lung Fields', value: 'Clear, no consolidation', normalRange: 'Clear', isAbnormal: false },
+          { parameter: 'Heart Shadow', value: 'Normal cardiothoracic ratio', normalRange: 'Normal', isAbnormal: false }
+        ],
+        doctorRemarks: 'No pneumonia or infection. Purely allergic airway response.'
+      }
+    ],
+    checkups: [
+      {
+        id: 'chk-aarav-1',
+        date: '15 Nov 2026',
+        title: 'School Health Assessment & De-worming Verification',
+        facilityOrAsha: 'Semadoh Zilla Parishad School Medical Officer',
+        status: 'UPCOMING',
+        type: 'PHC_VISIT',
+        notes: 'Annual Rashtriya Bal Swasthya Karyakram (RBSK) school checkup.'
+      }
+    ]
+  }
+];
+
 // Health Check
 app.get('/api/health', (req, res) => {
   res.json({
@@ -130,6 +400,92 @@ app.get('/api/facilities', (req, res) => {
 // GET Referrals
 app.get('/api/referrals', (req, res) => {
   res.json({ referrals });
+});
+
+// Family Health Locker Endpoints (परिवार स्वास्थ्य खाता)
+app.get('/api/family-members', (req, res) => {
+  res.json({ success: true, familyMembers });
+});
+
+app.post('/api/family-members', (req, res) => {
+  const { name, relation, age, gender, bloodGroup, abhaId, village, chronicConditions } = req.body;
+  const newMember = {
+    id: `fam-${Date.now()}`,
+    name: name || 'Family Member',
+    relation: relation || 'Self',
+    age: Number(age) || 30,
+    gender: gender || 'Female',
+    bloodGroup: bloodGroup || 'O+',
+    abhaId: abhaId || `91-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
+    village: village || 'Semadoh Village',
+    chronicConditions: Array.isArray(chronicConditions) ? chronicConditions : (chronicConditions ? [chronicConditions] : []),
+    prescriptions: [],
+    labReports: [],
+    checkups: []
+  };
+  familyMembers.push(newMember);
+  res.json({ success: true, member: newMember, familyMembers });
+});
+
+app.post('/api/family-members/:id/prescriptions', (req, res) => {
+  const member = familyMembers.find(m => m.id === req.params.id);
+  if (!member) return res.status(404).json({ error: 'Family member not found' });
+  const newRx = {
+    id: `rx-${Date.now()}`,
+    date: req.body.date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    doctorName: req.body.doctorName || 'Medical Officer',
+    facilityName: req.body.facilityName || 'Primary Health Center',
+    diagnosis: req.body.diagnosis || 'Clinical Consultation',
+    medicines: req.body.medicines || [],
+    investigations: req.body.investigations || [],
+    notes: req.body.notes || '',
+    imageUrl: req.body.imageUrl
+  };
+  member.prescriptions.unshift(newRx);
+  res.json({ success: true, prescription: newRx, member });
+});
+
+app.post('/api/family-members/:id/reports', (req, res) => {
+  const member = familyMembers.find(m => m.id === req.params.id);
+  if (!member) return res.status(404).json({ error: 'Family member not found' });
+  const newReport = {
+    id: `rep-${Date.now()}`,
+    date: req.body.date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    testName: req.body.testName || 'Diagnostic Report',
+    category: req.body.category || 'BLOOD',
+    facilityName: req.body.facilityName || 'District Hospital Diagnostic Lab',
+    summaryStatus: req.body.summaryStatus || 'NORMAL',
+    keyValues: req.body.keyValues || [],
+    doctorRemarks: req.body.doctorRemarks || '',
+    imageUrl: req.body.imageUrl
+  };
+  member.labReports.unshift(newReport);
+  res.json({ success: true, report: newReport, member });
+});
+
+app.post('/api/family-members/:id/checkups', (req, res) => {
+  const member = familyMembers.find(m => m.id === req.params.id);
+  if (!member) return res.status(404).json({ error: 'Family member not found' });
+  const newCheckup = {
+    id: `chk-${Date.now()}`,
+    date: req.body.date || new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    title: req.body.title || 'Routine Follow-up Checkup',
+    facilityOrAsha: req.body.facilityOrAsha || 'Village ASHA Worker',
+    status: req.body.status || 'UPCOMING',
+    type: req.body.type || 'ASHA_HOME_VISIT',
+    notes: req.body.notes || ''
+  };
+  member.checkups.unshift(newCheckup);
+  res.json({ success: true, checkup: newCheckup, member });
+});
+
+app.patch('/api/family-members/:id/checkups/:checkupId', (req, res) => {
+  const member = familyMembers.find(m => m.id === req.params.id);
+  if (!member) return res.status(404).json({ error: 'Family member not found' });
+  const chk = member.checkups.find(c => c.id === req.params.checkupId);
+  if (!chk) return res.status(404).json({ error: 'Checkup not found' });
+  chk.status = req.body.status || (chk.status === 'COMPLETED' ? 'UPCOMING' : 'COMPLETED');
+  res.json({ success: true, checkup: chk, member });
 });
 
 // 1. Voice Triage / CDSS Symptom Understanding (Gemini 2.5 Flash + Whisper fallback)

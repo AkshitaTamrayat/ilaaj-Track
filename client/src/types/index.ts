@@ -68,3 +68,68 @@ export interface Referral {
   isRerouted?: boolean;
   counterReferral?: CounterReferral;
 }
+
+export interface PrescriptionMedicine {
+  name: string;
+  dosage: string;
+  frequency: string; // e.g. "1-0-1 (सुबह - रात)"
+  duration: string; // e.g. "15 Days"
+  instructions?: string;
+}
+
+export interface PrescriptionSlip {
+  id: string;
+  date: string;
+  doctorName: string;
+  facilityName: string;
+  diagnosis: string;
+  medicines: PrescriptionMedicine[];
+  investigations: string[];
+  imageUrl?: string;
+  notes?: string;
+}
+
+export interface LabParameter {
+  parameter: string;
+  value: string;
+  normalRange: string;
+  isAbnormal?: boolean;
+  unit?: string;
+}
+
+export interface LabReport {
+  id: string;
+  date: string;
+  testName: string;
+  category: 'BLOOD' | 'IMAGING' | 'CARDIAC' | 'URINE' | 'OTHER';
+  facilityName: string;
+  summaryStatus: 'NORMAL' | 'ATTENTION' | 'CRITICAL';
+  keyValues: LabParameter[];
+  imageUrl?: string;
+  doctorRemarks?: string;
+}
+
+export interface CheckupSchedule {
+  id: string;
+  date: string;
+  title: string;
+  facilityOrAsha: string;
+  status: 'UPCOMING' | 'COMPLETED' | 'OVERDUE';
+  notes: string;
+  type: 'ASHA_HOME_VISIT' | 'PHC_VISIT' | 'SPECIALIST_CLINIC';
+}
+
+export interface FamilyMember {
+  id: string;
+  name: string;
+  relation: 'Self' | 'Mother' | 'Father' | 'Spouse' | 'Child' | 'Other';
+  age: number;
+  gender: 'Male' | 'Female' | 'Other';
+  bloodGroup: string;
+  abhaId: string;
+  village: string;
+  chronicConditions: string[];
+  prescriptions: PrescriptionSlip[];
+  labReports: LabReport[];
+  checkups: CheckupSchedule[];
+}

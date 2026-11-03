@@ -8,6 +8,12 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const navItems = [
     {
+      id: 'family',
+      title: 'Family Health Vault',
+      subtitle: 'परिवार स्वास्थ्य & रिपोर्ट्स',
+      icon: 'family_restroom'
+    },
+    {
       id: 'triage',
       title: 'Voice & Intake',
       subtitle: 'रोगी दाखिला और आवाज़',
