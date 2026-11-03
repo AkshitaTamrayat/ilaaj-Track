@@ -5,7 +5,7 @@ import { VoiceTriageSection } from './components/VoiceTriageSection';
 import { DynamicMapSection } from './components/DynamicMapSection';
 import { CasualtySection } from './components/CasualtySection';
 import { DhoHeatmapSection } from './components/DhoHeatmapSection';
-import { fetchFacilities, fetchReferrals } from './services/api';
+import { fetchFacilities, fetchReferrals, createReferral } from './services/api';
 import type { Facility, Referral } from './types';
 
 export function App() {
@@ -28,19 +28,26 @@ export function App() {
     loadData();
   }, []);
 
-  const handleReferralCreated = (newRefData: any) => {
-    const newReferral: Referral = {
-      id: `REF-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      createdAt: new Date().toISOString(),
-      status: 'EN_ROUTE',
-      timeline: [
-        { stage: 'TRIAGED_AT_PHC', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), note: 'Intake logged by frontline worker' },
-        { stage: 'READINESS_VERIFIED', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), note: 'Hospital verified (Doctor on duty, ICU 50%, ECG Ready)' }
-      ],
-      qrToken: `ILAAJ-SECURE-${Math.floor(100000 + Math.random() * 900000)}`,
-      ...newRefData
-    };
-    setReferrals([newReferral, ...referrals]);
+  const handleReferralCreated = async (newRefData: any) => {
+    try {
+      const res = await createReferral(newRefData);
+      if (res && res.referral) {
+        setReferrals(prev => [res.referral, ...prev.filter(r => r.id !== res.referral.id)]);
+      }
+    } catch {
+      const fallbackRef: Referral = {
+        id: `REF-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+        createdAt: new Date().toISOString(),
+        status: 'EN_ROUTE',
+        timeline: [
+          { stage: 'TRIAGED_AT_PHC', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), note: 'Intake logged by frontline worker' },
+          { stage: 'READINESS_VERIFIED', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), note: 'Hospital verified (Doctor on duty, ICU 50%, ECG Ready)' }
+        ],
+        qrToken: `ILAAJ-SECURE-${Math.floor(100000 + Math.random() * 900000)}`,
+        ...newRefData
+      };
+      setReferrals(prev => [fallbackRef, ...prev]);
+    }
     // Auto-switch to Care & Transit Reroute Map
     setActiveTab('map');
   };

@@ -10,6 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -162,26 +163,30 @@ Return a strict JSON response conforming exactly to this structure:
   "clinicalSummaryEn": "Concise 1-line English medical summary for receiving doctor"
 }`;
 
-      try {
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { responseMimeType: 'application/json' }
-            })
+      // 1. Try Gemini 3.5 Flash, then fallback to 3.1 Flash Lite
+      const candidateModels = ['gemini-3.5-flash', 'gemini-3.1-flash-lite'];
+      for (const model of candidateModels) {
+        try {
+          const geminiRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { responseMimeType: 'application/json' }
+              })
+            }
+          );
+          const data = await geminiRes.json();
+          const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (jsonText) {
+            const parsed = JSON.parse(jsonText);
+            return res.json({ success: true, aiEngine: `${model} Live`, result: parsed });
           }
-        );
-        const data = await geminiRes.json();
-        const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (jsonText) {
-          const parsed = JSON.parse(jsonText);
-          return res.json({ success: true, aiEngine: 'Gemini 2.5 Flash Live', result: parsed });
+        } catch (geminiErr) {
+          console.warn(`Gemini (${model}) failed, trying next candidate:`, geminiErr.message);
         }
-      } catch (geminiErr) {
-        console.error('Gemini API call failed, falling back to deterministic ICMR rule engine:', geminiErr);
       }
     }
 
@@ -260,30 +265,33 @@ Extract the written clinical information in JSON:
   "confidenceScore": number (0-100)
 }`;
 
-      try {
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [
-                  { text: prompt },
-                  { inlineData: { mimeType: req.file.mimetype || 'image/jpeg', data: base64Image } }
-                ]
-              }],
-              generationConfig: { responseMimeType: 'application/json' }
-            })
+      const candidateModels = ['gemini-3.5-flash', 'gemini-3.1-flash-lite'];
+      for (const model of candidateModels) {
+        try {
+          const geminiRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [
+                    { text: prompt },
+                    { inlineData: { mimeType: req.file.mimetype || 'image/jpeg', data: base64Image } }
+                  ]
+                }],
+                generationConfig: { responseMimeType: 'application/json' }
+              })
+            }
+          );
+          const data = await geminiRes.json();
+          const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (jsonText) {
+            return res.json({ success: true, aiEngine: `${model} Vision Live`, result: JSON.parse(jsonText) });
           }
-        );
-        const data = await geminiRes.json();
-        const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (jsonText) {
-          return res.json({ success: true, aiEngine: 'Gemini 2.5 Flash Vision', result: JSON.parse(jsonText) });
+        } catch (ocrErr) {
+          console.warn(`Gemini Vision OCR (${model}) failed, trying next candidate:`, ocrErr.message);
         }
-      } catch (ocrErr) {
-        console.error('Gemini Vision OCR failed:', ocrErr);
       }
     }
 

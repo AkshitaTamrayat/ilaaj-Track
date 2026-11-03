@@ -10,10 +10,42 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
   const [spokenText, setSpokenText] = useState(
     'मरीज़ को सुबह से छाती में तेज़ दर्द है, पसीना आ रहा है और सांस लेने में दिक्कत है। BP 168/104 है, पल्स 112 है। सुबह 10:15 बजे Sorbitrate 5mg और Aspirin 300mg दे दी गई है...'
   );
-  const [isRecording, setIsRecording] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dispatched, setDispatched] = useState(false);
   const [triageResult, setTriageResult] = useState<any>(null);
+
+  const toggleRecording = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setIsRecording(!isRecording);
+      return;
+    }
+
+    if (!isRecording) {
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'hi-IN';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.onresult = (event: any) => {
+          const transcript = event.results?.[0]?.[0]?.transcript;
+          if (transcript) {
+            setSpokenText(transcript);
+          }
+          setIsRecording(false);
+        };
+        recognition.onerror = () => setIsRecording(false);
+        recognition.onend = () => setIsRecording(false);
+        recognition.start();
+        setIsRecording(true);
+      } catch {
+        setIsRecording(!isRecording);
+      }
+    } else {
+      setIsRecording(false);
+    }
+  };
 
   const handleRunTriage = async () => {
     if (!spokenText.trim()) return;
@@ -246,7 +278,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => setIsRecording(!isRecording)}
+                    onClick={toggleRecording}
                     className={`w-12 h-12 rounded-full flex items-center justify-center transition shadow-sm cursor-pointer ${
                       isRecording ? 'bg-teal-700 text-white hover:bg-teal-800' : 'bg-slate-300 text-slate-700'
                     }`}
