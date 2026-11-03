@@ -36,7 +36,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
   return (
     <aside className="fixed left-0 top-16 bottom-0 w-64 bg-white border-r border-slate-200 z-40 flex flex-col justify-between p-4">
       <div className="flex flex-col gap-1">
-        <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="px-3 py-2 flex items-center gap-3 mb-2 pb-3 border-b border-slate-100">
+          <img
+            src="/logo.png"
+            alt="Ilaaj Track Official Emblem"
+            className="w-11 h-11 rounded-xl object-contain shadow-xs border border-teal-100 bg-white"
+          />
+          <div className="flex flex-col">
+            <span className="text-xs font-bold text-slate-800 leading-tight">National Health Portal</span>
+            <span className="text-[10px] text-teal-700 font-semibold">Rural Care Continuity</span>
+          </div>
+        </div>
+        <div className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
           Clinical Referral Workflow
         </div>
         <nav className="flex flex-col gap-1.5">

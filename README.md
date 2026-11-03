@@ -1,8 +1,13 @@
+<p align="center">
+  <img src="client/public/logo.png" width="180" alt="Ilaaj Track Official Logo" />
+</p>
+
 # 🏥 Ilaaj Track (इलाज ट्रैक)
 > **AI-Orchestrated Closed-Loop Healthcare Referral & Care Continuity Platform for Rural Communities**
 
 [![Live Demo](https://img.shields.io/badge/Live%20Platform-ilaaj--track.onrender.com-0f766e?style=for-the-badge&logo=render&logoColor=white)](https://ilaaj-track.onrender.com)
 [![Status](https://img.shields.io/badge/Deployment-Live%20%26%20Operational-10b981?style=for-the-badge)](https://ilaaj-track.onrender.com)
+[![AI Engine](https://img.shields.io/badge/AI%20Core-Gemini%203.8%20%7C%20Groq%20120B-8b5cf6?style=for-the-badge)](https://ilaaj-track.onrender.com)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 ---
@@ -97,7 +102,7 @@ The user interface is engineered specifically for low-resource rural clinical se
 | :--- | :--- |
 | **Frontend** | React 18, Vite, TypeScript, Tailwind CSS, Lucide Icons, Material Symbols |
 | **Backend API** | Node.js, Express, Multer, REST APIs |
-| **Clinical AI** | Google Gemini 2.5 Flash (Multimodal Clinical Reasoning & OCR), Groq Whisper |
+| **Clinical AI** | Google Gemini 3.8 Flash (Multimodal Clinical Reasoning & Vision OCR), Groq Flagship GPT-OSS 120B & Qwen 3.8 27B (Sub-second Reasoning), Groq Whisper Large v3 Turbo (Indic STT) |
 | **Data & State** | In-Memory State Cache, Supabase PostgreSQL Integration Ready |
 | **Hosting & CDN** | Render Global Edge, Render Web Services |
 

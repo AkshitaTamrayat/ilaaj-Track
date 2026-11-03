@@ -12,9 +12,11 @@ export const DhoHeatmapSection: React.FC<DhoHeatmapSectionProps> = ({ facilities
       {/* Breadcrumb & Section Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div className="flex items-center gap-3">
-          <span className="w-7 h-7 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs">
-            04
-          </span>
+          <img
+            src="/logo.png"
+            alt="Ilaaj Track"
+            className="w-10 h-10 rounded-xl object-contain shadow-xs border border-teal-100 bg-white"
+          />
           <div>
             <h1 className="text-xl font-bold text-slate-900 leading-tight">
               District Health Officer (DHO) Live Telemetry Radar (जिला सांख्यिकी)

@@ -11,9 +11,11 @@ export const Header: React.FC<HeaderProps> = () => {
         
         {/* Brand & Facility Context */}
         <div className="flex items-center gap-3.5 min-w-[280px]">
-          <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 shadow-sm">
-            <span className="material-symbols-outlined text-2xl">local_hospital</span>
-          </div>
+          <img
+            src="/logo.png"
+            alt="Ilaaj Track Official Logo"
+            className="w-10 h-10 rounded-xl object-contain shadow-xs border border-teal-100 bg-white"
+          />
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold text-slate-900 tracking-tight leading-none">Ilaaj Track</span>

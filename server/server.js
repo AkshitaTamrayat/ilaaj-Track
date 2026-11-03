@@ -163,29 +163,72 @@ Return a strict JSON response conforming exactly to this structure:
   "clinicalSummaryEn": "Concise 1-line English medical summary for receiving doctor"
 }`;
 
-      // 1. Try Gemini 3.5 Flash, then fallback to 3.1 Flash Lite
-      const candidateModels = ['gemini-3.5-flash', 'gemini-3.1-flash-lite'];
-      for (const model of candidateModels) {
-        try {
-          const geminiRes = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { responseMimeType: 'application/json' }
-              })
+      // 1. Try Google Gemini 3.8 Flash (Primary Gemini Model)
+      const geminiKey = process.env.GEMINI_API_KEY;
+      if (geminiKey) {
+        const candidateGeminiModels = ['gemini-3.8-flash', 'gemini-3.5-flash'];
+        for (const model of candidateGeminiModels) {
+          try {
+            const geminiRes = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: prompt }] }],
+                  generationConfig: { responseMimeType: 'application/json' }
+                }),
+                signal: AbortSignal.timeout(4000)
+              }
+            );
+            if (geminiRes.status === 200) {
+              const data = await geminiRes.json();
+              const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (jsonText) {
+                const parsed = JSON.parse(jsonText);
+                return res.json({ success: true, aiEngine: `${model} Live`, result: parsed });
+              }
+            } else {
+              console.warn(`Gemini (${model}) returned HTTP ${geminiRes.status}`);
             }
-          );
-          const data = await geminiRes.json();
-          const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (jsonText) {
-            const parsed = JSON.parse(jsonText);
-            return res.json({ success: true, aiEngine: `${model} Live`, result: parsed });
+          } catch (geminiErr) {
+            console.warn(`Gemini (${model}) failed:`, geminiErr.message);
           }
-        } catch (geminiErr) {
-          console.warn(`Gemini (${model}) failed, trying next candidate:`, geminiErr.message);
+        }
+      }
+
+      // 2. Try Groq Flagship Model (openai/gpt-oss-120b & qwen/qwen3.8-27b) for sub-second clinical inference
+      const groqKey = process.env.GROQ_API_KEY;
+      if (groqKey) {
+        const candidateGroqModels = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b'];
+        for (const model of candidateGroqModels) {
+          try {
+            const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${groqKey}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                model,
+                messages: [{ role: 'user', content: prompt }],
+                response_format: { type: 'json_object' }
+              }),
+              signal: AbortSignal.timeout(5000)
+            });
+            if (groqRes.status === 200) {
+              const data = await groqRes.json();
+              const text = data.choices?.[0]?.message?.content;
+              if (text) {
+                const parsed = JSON.parse(text);
+                return res.json({ success: true, aiEngine: `Groq (${model}) Live`, result: parsed });
+              }
+            } else {
+              console.warn(`Groq (${model}) returned HTTP ${groqRes.status}`);
+            }
+          } catch (groqErr) {
+            console.warn(`Groq (${model}) failed:`, groqErr.message);
+          }
         }
       }
     }
@@ -265,7 +308,7 @@ Extract the written clinical information in JSON:
   "confidenceScore": number (0-100)
 }`;
 
-      const candidateModels = ['gemini-3.5-flash', 'gemini-3.1-flash-lite'];
+      const candidateModels = ['gemini-3.8-flash', 'gemini-3.5-flash'];
       for (const model of candidateModels) {
         try {
           const geminiRes = await fetch(

@@ -106,9 +106,11 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
       {/* Breadcrumb & Field Context Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div className="flex items-center gap-3">
-          <span className="w-7 h-7 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs">
-            01
-          </span>
+          <img
+            src="/logo.png"
+            alt="Ilaaj Track Official Emblem"
+            className="w-10 h-10 rounded-xl object-contain shadow-xs border border-teal-100 bg-white"
+          />
           <div>
             <h1 className="text-xl font-bold text-slate-900 leading-tight">
               Emergency Patient Triage & Intake (रोगी दाखिला)
