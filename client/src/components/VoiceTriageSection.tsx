@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { runVoiceTriage, runPrescriptionOCR } from '../services/api';
+import React, { useState, useRef, useEffect } from 'react';
+import { runVoiceTriage, runPrescriptionOCR, transcribeAudio } from '../services/api';
 import confetti from 'canvas-confetti';
 
 interface VoiceTriageSectionProps {
@@ -11,39 +11,147 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
     'मरीज़ को सुबह से छाती में तेज़ दर्द है, पसीना आ रहा है और सांस लेने में दिक्कत है। BP 168/104 है, पल्स 112 है। सुबह 10:15 बजे Sorbitrate 5mg और Aspirin 300mg दे दी गई है...'
   );
   const [isRecording, setIsRecording] = useState(false);
+  const [selectedLang, setSelectedLang] = useState<'hi-IN' | 'en-IN'>('hi-IN');
+  const [micStatus, setMicStatus] = useState<string>('Ready • Tap mic to speak');
   const [loading, setLoading] = useState(false);
   const [dispatched, setDispatched] = useState(false);
   const [triageResult, setTriageResult] = useState<any>(null);
 
+  const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch {}
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        try { mediaRecorderRef.current.stop(); } catch {}
+      }
+    };
+  }, []);
+
+  const stopAllRecording = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {}
+      recognitionRef.current = null;
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch {}
+      mediaRecorderRef.current = null;
+    }
+    setIsRecording(false);
+    setMicStatus('Recording finished • Ready');
+  };
+
+  const startMediaRecorderFallback = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        if (audioChunksRef.current.length > 0) {
+          setMicStatus('Transcribing via Groq Whisper Large v3...');
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+          const res = await transcribeAudio(audioBlob);
+          if (res && res.text) {
+            setSpokenText(res.text);
+            setMicStatus('Transcribed via Groq Whisper');
+          } else {
+            setMicStatus('Could not transcribe audio');
+          }
+        }
+      };
+
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setIsRecording(true);
+      setMicStatus('Listening via Microphone (Groq Whisper Mode)... Tap mic to stop');
+    } catch (err: any) {
+      console.warn('Microphone permission or access error:', err);
+      setMicStatus('Microphone blocked by browser. Please enable mic access.');
+      setIsRecording(false);
+    }
+  };
+
   const toggleRecording = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setIsRecording(!isRecording);
+    if (isRecording) {
+      stopAllRecording();
       return;
     }
 
-    if (!isRecording) {
-      try {
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'hi-IN';
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.onresult = (event: any) => {
-          const transcript = event.results?.[0]?.[0]?.transcript;
-          if (transcript) {
-            setSpokenText(transcript);
-          }
-          setIsRecording(false);
-        };
-        recognition.onerror = () => setIsRecording(false);
-        recognition.onend = () => setIsRecording(false);
-        recognition.start();
-        setIsRecording(true);
-      } catch {
-        setIsRecording(!isRecording);
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      startMediaRecorderFallback();
+      return;
+    }
+
+    try {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch {}
+        recognitionRef.current = null;
       }
-    } else {
-      setIsRecording(false);
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = selectedLang;
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        setIsRecording(true);
+        setMicStatus(`Listening (${selectedLang === 'hi-IN' ? 'Hindi' : 'English'})... Speak into microphone`);
+      };
+
+      recognition.onresult = (event: any) => {
+        let transcript = '';
+        for (let i = 0; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript + ' ';
+        }
+        if (transcript.trim()) {
+          setSpokenText(transcript.trim());
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.warn('SpeechRecognition error:', event.error);
+        if (event.error === 'not-allowed') {
+          setMicStatus('Mic blocked. Please allow microphone in browser URL bar.');
+          setIsRecording(false);
+        } else if (event.error === 'no-speech') {
+          setMicStatus('No voice detected. Tap mic to retry.');
+        } else {
+          stopAllRecording();
+          startMediaRecorderFallback();
+        }
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+        setMicStatus('Mic stopped • Tap to speak again');
+        recognitionRef.current = null;
+      };
+
+      recognition.start();
+      recognitionRef.current = recognition;
+    } catch (err) {
+      console.warn('SpeechRecognition start failed, falling back to Groq Whisper:', err);
+      startMediaRecorderFallback();
     }
   };
 
@@ -257,87 +365,169 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
         <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-5">
           <div className="space-y-4">
             
-            {/* Card Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            {/* Card Header with Language Selector & Mic Status */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center">
                   <span className="material-symbols-outlined text-lg">mic</span>
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-slate-900">Voice Symptom Intake (आवाज़ से विवरण)</h3>
-                  <p className="text-xs text-slate-500">Speak naturally in Hindi or local language</p>
+                  <p className="text-xs text-slate-500">Live AI Speech Recognition + Groq Whisper Engine</p>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                Microphone Active
-              </span>
+
+              <div className="flex items-center gap-2">
+                {/* Language Selector */}
+                <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => { setSelectedLang('hi-IN'); setMicStatus('Language set to Hindi'); }}
+                    className={`px-2 py-0.5 rounded text-[11px] font-bold transition ${
+                      selectedLang === 'hi-IN' ? 'bg-white text-teal-800 shadow-xs' : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    हिंदी
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setSelectedLang('en-IN'); setMicStatus('Language set to English'); }}
+                    className={`px-2 py-0.5 rounded text-[11px] font-bold transition ${
+                      selectedLang === 'en-IN' ? 'bg-white text-teal-800 shadow-xs' : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    English
+                  </button>
+                </div>
+
+                {isRecording ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
+                    Recording
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    Mic Ready
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Voice Dictation Interactive Strip */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+            <div className={`p-4 rounded-xl border transition space-y-3 ${
+              isRecording ? 'bg-rose-50/40 border-rose-200 shadow-sm' : 'bg-slate-50 border-slate-200'
+            }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={toggleRecording}
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition shadow-sm cursor-pointer ${
-                      isRecording ? 'bg-teal-700 text-white hover:bg-teal-800' : 'bg-slate-300 text-slate-700'
+                    className={`w-13 h-13 rounded-full flex items-center justify-center transition shadow-md cursor-pointer ${
+                      isRecording
+                        ? 'bg-rose-600 text-white animate-pulse hover:bg-rose-700 ring-4 ring-rose-200'
+                        : 'bg-teal-700 text-white hover:bg-teal-800 hover:scale-105'
                     }`}
+                    title={isRecording ? 'Click to stop recording' : 'Click to start speaking'}
                   >
                     <span className="material-symbols-outlined text-2xl">
-                      {isRecording ? 'mic' : 'mic_off'}
+                      {isRecording ? 'stop' : 'mic'}
                     </span>
                   </button>
                   <div>
                     <span className="text-sm font-bold text-slate-800 block">
-                      Recording in Hindi • Voice Assistant
+                      {isRecording ? 'Microphone Active — Speak Now' : 'Voice Assistant Ready'}
                     </span>
-                    <span className="text-xs text-slate-500">
-                      Tap microphone to pause or speak again
+                    <span className={`text-xs ${isRecording ? 'text-rose-700 font-semibold' : 'text-slate-500'}`}>
+                      {micStatus}
                     </span>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-xs font-mono font-bold text-slate-700">
-                  00:48 / Live
+                <span className={`px-2.5 py-1 rounded-md border text-xs font-mono font-bold ${
+                  isRecording ? 'bg-rose-100 border-rose-300 text-rose-800 animate-pulse' : 'bg-white border-slate-200 text-slate-700'
+                }`}>
+                  {isRecording ? 'REC • LIVE' : 'STANDBY'}
                 </span>
               </div>
 
-              {/* Calm Waveform Graphic */}
-              <div className="h-8 w-full flex items-center justify-between gap-1 px-3 bg-white rounded-lg border border-slate-200">
-                <div className="w-1.5 bg-teal-400 h-2 rounded-full"></div>
-                <div className="w-1.5 bg-teal-600 h-4 rounded-full"></div>
-                <div className="w-1.5 bg-teal-700 h-6 rounded-full"></div>
-                <div className="w-1.5 bg-teal-500 h-3 rounded-full"></div>
-                <div className="w-1.5 bg-teal-700 h-7 rounded-full"></div>
-                <div className="w-1.5 bg-teal-500 h-4 rounded-full"></div>
-                <div className="w-1.5 bg-teal-700 h-5 rounded-full"></div>
-                <div className="w-1.5 bg-teal-600 h-6 rounded-full"></div>
-                <div className="w-1.5 bg-teal-400 h-3 rounded-full"></div>
-                <div className="w-1.5 bg-teal-700 h-7 rounded-full"></div>
-                <div className="w-1.5 bg-teal-600 h-5 rounded-full"></div>
-                <div className="w-1.5 bg-teal-500 h-4 rounded-full"></div>
-                <div className="w-1.5 bg-teal-700 h-6 rounded-full"></div>
-                <div className="w-1.5 bg-teal-600 h-3 rounded-full"></div>
-                <div className="w-1.5 bg-teal-400 h-2 rounded-full"></div>
-                <div className="w-1.5 bg-teal-600 h-5 rounded-full"></div>
-                <div className="w-1.5 bg-teal-700 h-6 rounded-full"></div>
-                <div className="w-1.5 bg-teal-500 h-3 rounded-full"></div>
-                <div className="w-1.5 bg-teal-400 h-2 rounded-full"></div>
+              {/* Calm Animated Waveform Graphic */}
+              <div className="h-8 w-full flex items-center justify-between gap-1 px-3 bg-white rounded-lg border border-slate-200 overflow-hidden">
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-500 animate-bounce h-5' : 'bg-teal-400 h-2'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-600 animate-pulse h-7' : 'bg-teal-600 h-4'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-700 animate-bounce h-6' : 'bg-teal-700 h-6'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-500 animate-pulse h-4' : 'bg-teal-500 h-3'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-700 animate-bounce h-7' : 'bg-teal-700 h-7'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-600 animate-pulse h-5' : 'bg-teal-500 h-4'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-700 animate-bounce h-6' : 'bg-teal-700 h-5'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-500 animate-pulse h-4' : 'bg-teal-600 h-6'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-600 animate-bounce h-7' : 'bg-teal-400 h-3'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-700 animate-pulse h-5' : 'bg-teal-700 h-7'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-500 animate-bounce h-6' : 'bg-teal-600 h-5'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-600 animate-pulse h-4' : 'bg-teal-500 h-4'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-700 animate-bounce h-7' : 'bg-teal-700 h-6'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-500 animate-pulse h-3' : 'bg-teal-600 h-3'}`}></div>
+                <div className={`w-1.5 rounded-full transition-all ${isRecording ? 'bg-rose-600 animate-bounce h-5' : 'bg-teal-400 h-2'}`}></div>
               </div>
             </div>
 
             {/* Spoken Audio Transcript */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Spoken Audio Transcript (बोली गई बातें)
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  Spoken Audio Transcript (बोली गई बातें)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setSpokenText('')}
+                  className="text-[11px] text-slate-400 hover:text-slate-600 font-semibold"
+                >
+                  Clear text
+                </button>
+              </div>
               <textarea
                 value={spokenText}
                 onChange={(e) => setSpokenText(e.target.value)}
                 rows={3}
+                placeholder="Speak into microphone or select a symptom preset below..."
                 className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 leading-relaxed font-normal focus:outline-none focus:border-teal-700 focus:bg-white transition resize-none"
               />
+
+              {/* Instant Symptom Presets */}
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
+                  Quick Presets:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSpokenText('मरीज़ को सुबह से छाती में तेज़ दर्द है, पसीना आ रहा है और सांस लेने में दिक्कत है। BP 168/104 है, पल्स 112 है। सुबह 10:15 बजे Sorbitrate 5mg और Aspirin 300mg दे दी गई है।');
+                    setMicStatus('Loaded Heart Attack / ACS symptoms');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold border border-rose-200 transition cursor-pointer"
+                >
+                  🚨 छाती में तेज़ दर्द व पसीना (Heart Attack)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSpokenText('मरीज़ को सांस लेने में बहुत दिक्कत हो रही है, घरघराहट है, SpO2 86% है और BP 150/95 है। 1 घंटे से हालत गंभीर है।');
+                    setMicStatus('Loaded Asthmatic Respiratory Emergency');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold border border-amber-200 transition cursor-pointer"
+                >
+                  ⚠️ सांस फूलना व कम SpO2 (Severe Asthma)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSpokenText('मोटरसाइकिल दुर्घटना, मरीज के दाहिने पैर में फ्रैक्चर है और बहुत खून बह रहा है। BP 90/60 है, नब्ज़ 120 है।');
+                    setMicStatus('Loaded Road Accident Trauma symptoms');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition cursor-pointer"
+                >
+                  🩸 दुर्घटना व फ्रैक्चर (Major Trauma)
+                </button>
+              </div>
             </div>
 
             {/* Identified Clinical Findings */}
