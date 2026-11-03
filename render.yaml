@@ -1,6 +1,5 @@
 # Render Blueprint & Workflows Configuration for Ilaaj Track (इलाज ट्रैक)
-# SIH 2026 / Build The AI For YOU 2026 Hackathon
-# Qualifies for: "Best Use of Render" Track ($500 1st place)
+# AI-Orchestrated Closed-Loop Healthcare Referral Platform for Rural Healthcare
 
 services:
   # 1. Backend REST & AI Orchestrator API (Free Web Service)

@@ -1,111 +1,175 @@
 # 🏥 Ilaaj Track (इलाज ट्रैक)
-> **AI-Orchestrated Closed-Loop Healthcare Referral & Care Continuity Platform**  
-> *Smart India Hackathon 2026 • SIH26133 • Build The AI For YOU 2026 Hackathon*  
-> *Sponsor Track: "Best Use of Render" (Render Workflows Blueprint)*
+> **AI-Orchestrated Closed-Loop Healthcare Referral & Care Continuity Platform for Rural Communities**
+
+[![Live Demo](https://img.shields.io/badge/Live%20Platform-ilaaj--track.onrender.com-0f766e?style=for-the-badge&logo=render&logoColor=white)](https://ilaaj-track.onrender.com)
+[![Status](https://img.shields.io/badge/Deployment-Live%20%26%20Operational-10b981?style=for-the-badge)](https://ilaaj-track.onrender.com)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🎯 The Guiding Core Thesis
-> *"Don't just send the patient. Make sure the care is ready — and stay with the journey until care is complete."*
+## 🌐 Live Website & Demo Links
+* **Live Web Application:** [https://ilaaj-track.onrender.com](https://ilaaj-track.onrender.com)
+* **REST API Health Endpoint:** [https://ilaaj-track.onrender.com/api/health](https://ilaaj-track.onrender.com/api/health)
+* **Active Facilities Directory:** [https://ilaaj-track.onrender.com/api/facilities](https://ilaaj-track.onrender.com/api/facilities)
+* **Live Referrals Queue:** [https://ilaaj-track.onrender.com/api/referrals](https://ilaaj-track.onrender.com/api/referrals)
 
 ---
 
-## 🚨 The Rural Healthcare Crisis: The "Clinical Black Hole"
-In India's tiered public healthcare structure (160,000+ Ayushman Arogya Mandirs $\rightarrow$ 31,000+ PHCs $\rightarrow$ CHCs/SDHs $\rightarrow$ District Hospitals & Government Medical Colleges), emergency referrals are broken:
-* **150,000+ blind paper referral slips** are written weekly nationwide with zero advance notice or bed reservations.
-* **48.2% Referral Drop-Out Rate** (*The Lancet Global Health, 2020*): Almost half of rural patients abandon care after traveling 40–80 km over poor roads, only to discover absent specialists, full ICUs, or broken diagnostic machines (ECG, X-Ray, CT).
-* **Catastrophic Out-of-Pocket Expenditure (OOPE)**: Drives 47.1% of India's health spending, forcing 55 million citizens below the poverty line every year (*National Health Accounts 2020-21*). Redundant repeat visits cause over 60% of this cost burden.
-* **Zero Counter-Referral**: Discharged patients get no home follow-up from village ASHA workers, leading to frequent post-operative relapses and preventable mortality.
+## 🎯 Mission Statement
+> *"Never send a rural patient blindly into the dark. Ensure the receiving hospital is ready, guide the journey with live routing, and stay connected until post-discharge recovery is verified in their village."*
 
 ---
 
-## ⚡ The 4 Architectural Pillars of Ilaaj Track
-1. **Voice-First Indic Frontline:** Frontline village ASHA workers speak colloquial Hindi/Marathi. Multimodal AI extracts vitals and red flags into structured ICMR entities in $<50$ seconds on basic 2GB RAM phones.
-2. **Offline-First PWA Engine:** IndexedDB cache (Dexie.js) ensures zero data loss during multi-day monsoon cellular outages in deep tribal blocks (Melghat, Nandurbar).
-3. **Coordinated One-Trip Care Bundle:** Groups doctor consults, diagnostic lab tests (ECG, CBC, X-Ray), and transit token into a single trip, ending "ping-pong" referrals.
-4. **Care Readiness Engine ("The WOW Engine") & Dynamic Haversine Reroute:** Evaluates 6 live destination criteria (Doctor on duty, diagnostic equipment uptime, ICU beds $<85\%$, blood bank, transport, ABHA compliance) before travel. If a hospital breaks down mid-transit, referrals are automatically rerouted in real time to the nearest capable secondary facility.
+## 🚨 The Rural Healthcare Challenge: The "Clinical Black Hole"
+In public healthcare networks across rural India (Ayushman Arogya Mandirs $\rightarrow$ Primary Health Centres $\rightarrow$ Community Health Centres $\rightarrow$ Sub-District & District Hospitals), emergency referrals face critical systemic friction:
+* **Over 150,000 blind paper referral slips** are written every week with zero advance notice to receiving facilities and zero bed reservations.
+* **48.2% Referral Drop-Out Rate** (*The Lancet Global Health*): Nearly half of rural patients abandon care after traveling 40–80 km over unpaved roads, only to find absent specialists, full ICU wards, or broken diagnostic equipment (ECG, X-Ray, CT).
+* **Catastrophic Out-of-Pocket Expenditure (OOPE)**: Redundant emergency visits and repeated diagnostic tests drive families into medical debt.
+* **Absence of Counter-Referrals**: Once discharged, patients return to remote villages without structured follow-up, causing preventable post-operative relapses.
 
 ---
 
-## 🚀 Render Workflows Architecture ("Best Use of Render" Track)
-
-This repository is powered by a multi-service **Render Blueprint (`render.yaml`)**:
+## ⚡ Key Platform Capabilities
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   ILAAJ TRACK ON RENDER WORKFLOWS                      │
-└────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                            ILAAJ TRACK PLATFORM ARCHITECTURE                     │
+└──────────────────────────────────────────────────────────────────────────────────┘
 
- ┌──────────────────────────────────┐    ┌───────────────────────────────┐
- │ 1. Web Service (Static Site)     │    │ 2. Web Service (Backend API)  │
- │    Name: ilaaj-track-web         │    │    Name: ilaaj-track-api      │
- │    Vite + React 18 + Tailwind    │◄──►│    Express + Gemini 2.5 Flash │
- │    Zero-latency global CDN edge  │    │    Restful CDSS & OCR APIs    │
- └──────────────────────────────────┘    └───────────────┬───────────────┘
-                                                         │
-                                         ┌───────────────▼───────────────┐
-                                         │ 3. Render Cron Worker         │
-                                         │    Name: ilaaj-bottleneck-dmn │
-                                         │    Schedule: "*/10 * * * *"   │
-                                         │    Auto-monitors equipment &  │
-                                         │    stuck referral delays      │
-                                         └───────────────────────────────┘
+   [ 1. Rural Health Post ]          [ 2. Cloud AI Engine ]         [ 3. Receiving Hospital ]
+  • Frontline ASHA / ANM Worker    • Multimodal Gemini 2.5 Flash   • District Casualty Desk
+  • Indic Spoken Voice Input       • 6-Factor Facility Scorecard   • Bed Pre-Reservation
+  • Handwritten Slip OCR           • Dynamic Haversine Routing     • QR Handover Scan
+            │                               │                              │
+            ▼                               ▼                              ▼
+  ┌───────────────────┐           ┌───────────────────┐          ┌───────────────────┐
+  │ Voice/OCR Triage  │──────────►│ Care Readiness &  │─────────►│ Pre-Arrival Queue │
+  │ & Vital Extraction│           │ Smart Rerouting   │          │ & Green Corridor  │
+  └───────────────────┘           └───────────────────┘          └───────────────────┘
+            ▲                                                              │
+            │                                                              ▼
+  ┌───────────────────┐                                          ┌───────────────────┐
+  │ DHO Infrastructure│◄─────────────────────────────────────────│ Counter-Referral  │
+  │ Network Heatmap   │        Live Closed-Loop Feedback         │ Village Follow-Up │
+  └───────────────────┘                                          └───────────────────┘
 ```
 
-1. **`ilaaj-track-web`** *(Static Web Service)*: Ultra-lightweight Vite React PWA bundle ($<90$ kB gzipped).
-2. **`ilaaj-track-api`** *(Node Web Service)*: AI orchestrator handling Gemini 2.5 Flash clinical reasoning, multimodal prescription slip parsing, and 6-factor care readiness checks.
-3. **`ilaaj-bottleneck-daemon`** *(Render Cron Worker)*: Automatically audits the secondary care network every 10 minutes to detect hospital overcrowding, broken diagnostic machines, and unacknowledged referrals ($>4$ hours), escalating alerts directly to Chief Medical Officers.
+### 1. Indic Voice & Prescription OCR Clinical Triage
+* Designed for frontline ASHA and ANM workers speaking colloquial Hindi or Marathi.
+* Multimodal AI extracts vitals (BP, SpO2, Pulse, Temp) and presents symptoms into structured ICMR entities in $<5$ seconds.
+* Handwritten prescription slip OCR transcribes medications and past interventions instantly.
+
+### 2. 6-Factor Hospital Readiness Engine & Dynamic Rerouting
+* Before a patient boards transport, Ilaaj Track evaluates the receiving hospital across 6 live criteria:
+  1. Specialist on duty (Cardiologist, Obstetrician, Surgeon)
+  2. Diagnostic equipment uptime (ECG, X-Ray, CT Scanner)
+  3. ICU bed availability ($<85\%$ threshold)
+  4. Blood bank status (O-negative reserves)
+  5. Emergency corridor transport availability
+  6. Universal identity verification
+* **Automated Mid-Transit Rerouting:** If the primary destination experiences an ICU surge or equipment breakdown, the system automatically redirects the ambulance to the nearest capable facility via live Haversine routing.
+
+### 3. Casualty Pre-Arrival Queue & 108 Emergency Green Corridor
+* Receiving emergency casualty departments receive digital advance notice with complete vitals, suspected diagnosis, and pre-assigned diagnostic slots.
+* Fast-track token and digital QR code eliminate chaotic 3-hour casualty registration queues.
+
+### 4. Post-Discharge Village Follow-Up (Counter-Referral)
+* Closes the loop when the patient returns home.
+* Automatically schedules post-discharge checkups for the village ASHA worker, unlocking direct performance incentives upon completed verification.
+
+### 5. DHO Infrastructure & Equipment Uptime Radar
+* Provides District Health Officers with real-time visibility into machine downtime, specialist vacancies, and referral bottleneck patterns across all blocks.
 
 ---
 
-## 🛠️ Quick Start: Running Locally
+## 🎨 Rural Clinical Fieldwork Design System
+The user interface is engineered specifically for low-resource rural clinical settings:
+* **Daylight-First High-Contrast Palette:** Glare-resistant clinical teal (`#0f766e`), slate (`#f8fafc`), and alert rose (`#be123c`) designed for outdoor sunlight visibility.
+* **48px Tactile Touch Targets:** Large, fumble-free buttons accessible on budget touchscreens and mobile devices.
+* **Typography:** Clear, open humanist typography with Plus Jakarta Sans and Google Material Symbols.
+* **Bilingual Frontline Clarity:** English interface with dual Indic language subtext for frontline workers.
 
-### 1. Run the Backend API:
+---
+
+## 🏗️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React 18, Vite, TypeScript, Tailwind CSS, Lucide Icons, Material Symbols |
+| **Backend API** | Node.js, Express, Multer, REST APIs |
+| **Clinical AI** | Google Gemini 2.5 Flash (Multimodal Clinical Reasoning & OCR), Groq Whisper |
+| **Data & State** | In-Memory State Cache, Supabase PostgreSQL Integration Ready |
+| **Hosting & CDN** | Render Global Edge, Render Web Services |
+
+---
+
+## 🛠️ Quick Start: Local Development
+
+### Prerequisites
+* **Node.js**: v18.0.0 or higher
+* **npm**: v9.0.0 or higher
+
+### 1. Clone the Repository
 ```bash
-cd server
+git clone https://github.com/AkshitaTamrayat/ilaaj-Track.git
+cd ilaaj-Track
+```
+
+### 2. Install Dependencies
+```bash
+# Install backend and root dependencies
 npm install
+
+# Install frontend dependencies
+npm --prefix client install
+```
+
+### 3. Configure Environment Variables
+Create a `.env` file in the `server/` directory:
+```env
+PORT=5000
+NODE_ENV=development
+GEMINI_API_KEY=your_gemini_api_key_here
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+### 4. Start Development Servers
+```bash
+# Run backend server (from project root)
 npm start
-# Runs on http://localhost:5000
-```
+# Server starts on http://localhost:5000
 
-### 2. Run the Frontend Client:
-```bash
+# In a separate terminal, run frontend client
 cd client
-npm install
 npm run dev
-# Runs on http://localhost:3000
+# Vite frontend starts on http://localhost:3000
+```
+
+### 5. Build for Production
+```bash
+npm run build
 ```
 
 ---
 
-## 🚢 Deploying to Render via Blueprint (Render Workflows)
+## ☁️ Deployment on Render
 
-1. **Push this repo to GitHub:**
-   ```bash
-   git init
-   git add .
-   git commit -m "feat: Ilaaj Track - AI Rural Healthcare Platform with Render Workflows"
-   git branch -M main
-   git remote add origin <YOUR_GITHUB_REPO_URL>
-   git push -u origin main
-   ```
-2. **Claim your $50 Render Credits:**
-   - Go to: [Render Credits Portal](https://credits-portal-mmdm.onrender.com/claim/osen-craftora-hackathons)
-3. **Deploy with 1-Click via Blueprints:**
-   - In your Render Dashboard, click **New +** $\rightarrow$ **Blueprint**.
-   - Connect your GitHub repository.
-   - Render will automatically detect `render.yaml` and provision:
-     - `ilaaj-track-api` (Backend)
-     - `ilaaj-track-web` (Frontend Static Site)
-     - `ilaaj-bottleneck-daemon` (Scheduled Cron Worker)
-4. **Add Environment Variables in Render Dashboard:**
-   - `GEMINI_API_KEY`: Your Google AI Studio key.
-   - `GROQ_API_KEY`: (Optional) For sub-second Whisper STT.
+This project is configured for fullstack deployment on Render:
+
+1. **Web Service Configuration:**
+   * **Environment:** `Node`
+   * **Build Command:** `npm install && npm run build`
+   * **Start Command:** `npm start`
+   * **Health Check Path:** `/api/health`
+2. **Environment Variables:**
+   * `NODE_ENV` = `production`
+   * `PORT` = `10000`
+   * `GEMINI_API_KEY` = `<your-api-key>`
+   * `GROQ_API_KEY` = `<your-api-key>`
+
+Express automatically serves the pre-compiled Vite frontend from `client/dist` and handles API requests under `/api/*`.
 
 ---
 
-## 📊 Measurable Clinical & Economic Outcomes
-* **$<10\%$ Referral Drop-Out:** Slashed from $48.2\%$ baseline via verified closed-loop tracking.
-* **$60\%+$ Out-of-Pocket Cost Reduction:** Prevents redundant transit debt via Coordinated One-Trip Care Bundles.
-* **$<45$ min Hospital Wait Time:** Fast-track pre-arrival triage bypasses chaotic 3.5-hour casualty queues.
-* **$48.5\%$ B2G Operating Margin:** Self-funding under National Health Mission PIP contracts; unlocks ₹50 direct performance incentives for village ASHA workers per verified post-discharge follow-up.
+## 📄 License
+This project is open-source under the [MIT License](LICENSE).
