@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Navbar } from './components/Navbar';
+import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { VoiceTriageSection } from './components/VoiceTriageSection';
 import { DynamicMapSection } from './components/DynamicMapSection';
 import { CasualtySection } from './components/CasualtySection';
@@ -34,64 +35,72 @@ export function App() {
       status: 'EN_ROUTE',
       timeline: [
         { stage: 'TRIAGED_AT_PHC', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), note: 'Intake logged by frontline worker' },
-        { stage: 'READINESS_VERIFIED', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), note: 'Amravati DH verified (ICU 73%, ECG Ready)' }
+        { stage: 'READINESS_VERIFIED', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), note: 'Hospital verified (Doctor on duty, ICU 50%, ECG Ready)' }
       ],
       qrToken: `ILAAJ-SECURE-${Math.floor(100000 + Math.random() * 900000)}`,
       ...newRefData
     };
     setReferrals([newReferral, ...referrals]);
-    // Auto-switch to Dynamic Reroute Map to WOW the judges!
+    // Auto-switch to Care & Transit Reroute Map
     setActiveTab('map');
   };
 
   return (
-    <div className="min-h-screen bg-[#070c18] text-slate-100 flex flex-col">
-      {/* Navigation Bar */}
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      {/* Fixed Top Header */}
+      <Header activeTab={activeTab} />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8">
-        {loading ? (
-          <div className="flex items-center justify-center h-64 text-slate-500 text-sm font-mono">
-            Initializing Ilaaj Track System State...
-          </div>
-        ) : (
-          <div>
-            {activeTab === 'triage' && (
-              <VoiceTriageSection onReferralCreated={handleReferralCreated} />
-            )}
+      {/* Fixed Left Sidebar Navigation */}
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-            {activeTab === 'map' && (
-              <DynamicMapSection
-                facilities={facilities}
-                referrals={referrals}
-                onRefresh={loadData}
-              />
-            )}
+      {/* Main Content Area */}
+      <div className="pl-64 pt-16">
+        <main className="w-full p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+          {loading ? (
+            <div className="flex items-center justify-center h-64 text-slate-500 text-sm font-medium">
+              <span className="material-symbols-outlined text-2xl text-teal-700 animate-spin mr-2">
+                progress_activity
+              </span>
+              Loading Ilaaj Track Clinical Portal...
+            </div>
+          ) : (
+            <div>
+              {activeTab === 'triage' && (
+                <VoiceTriageSection onReferralCreated={handleReferralCreated} />
+              )}
 
-            {activeTab === 'hospital' && (
-              <CasualtySection
-                referrals={referrals}
-                onRefresh={loadData}
-              />
-            )}
+              {activeTab === 'map' && (
+                <DynamicMapSection
+                  facilities={facilities}
+                  referrals={referrals}
+                  onRefresh={loadData}
+                />
+              )}
 
-            {activeTab === 'telemetry' && (
-              <DhoHeatmapSection facilities={facilities} />
-            )}
-          </div>
-        )}
-      </main>
+              {activeTab === 'hospital' && (
+                <CasualtySection
+                  referrals={referrals}
+                  onRefresh={loadData}
+                />
+              )}
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 bg-[#070c18]/80 py-4 px-4 text-center text-xs text-slate-500">
-        <p>
-          <strong>Ilaaj Track (स्वास्थ्यसेतु)</strong> • Built for SIH 2026 & "Build The AI For YOU" Hackathon • Hosted on Render Workflows
-        </p>
-        <p className="text-[11px] text-slate-600 mt-0.5">
-          Guiding Thesis: "Don't just send the patient. Make sure the care is ready — and stay with the journey until care is complete."
-        </p>
-      </footer>
+              {activeTab === 'telemetry' && (
+                <DhoHeatmapSection facilities={facilities} />
+              )}
+            </div>
+          )}
+
+          {/* Simple Institutional Footer */}
+          <footer className="pt-6 pb-8 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>
+              <strong>Ilaaj Track (ईलाज ट्रैक)</strong> • Rural Healthcare Closed-Loop Referral & Care Continuity Platform
+            </p>
+            <p className="text-[11px] text-slate-400">
+              Guiding Principle: "Verify care readiness before travel, track the journey until home care is complete."
+            </p>
+          </footer>
+        </main>
+      </div>
     </div>
   );
 }
