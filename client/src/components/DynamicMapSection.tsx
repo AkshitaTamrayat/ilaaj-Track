@@ -98,19 +98,19 @@ export const DynamicMapSection: React.FC<DynamicMapSectionProps> = ({ facilities
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* Left Column: Visual Map Simulation */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
+        <div className="lg:col-span-7 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <span className="material-symbols-outlined text-teal-700 text-lg">navigation</span>
               Active Ambulance Transit Corridor
             </span>
-            <span className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full font-semibold">
+            <span className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full font-semibold w-fit">
               Live GPS • ALS Ambulance #KA-04-E-108
             </span>
           </div>
 
           {/* SVG Map Canvas (Clean Daylight Medical View) */}
-          <div className="relative w-full h-[360px] bg-slate-50 rounded-xl border border-slate-200 overflow-hidden flex items-center justify-center p-6">
+          <div className="relative w-full h-[280px] sm:h-[340px] md:h-[380px] bg-slate-50 rounded-xl border border-slate-200 overflow-hidden flex items-center justify-center p-2 sm:p-6">
             
             {/* Background Map Grid */}
             <div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'radial-gradient(#94a3b8 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
@@ -209,7 +209,7 @@ export const DynamicMapSection: React.FC<DynamicMapSectionProps> = ({ facilities
 
         {/* Right Column: 6-Factor Facility Comparison */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <span className="material-symbols-outlined text-teal-700 text-lg">verified</span>
               6-Factor Hospital Readiness Scorecard

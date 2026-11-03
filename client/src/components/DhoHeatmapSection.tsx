@@ -34,7 +34,7 @@ export const DhoHeatmapSection: React.FC<DhoHeatmapSectionProps> = ({ facilities
       </div>
 
       {/* 4 Impact Pillars Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1.5">
           <div className="flex items-center justify-between text-rose-700 text-xs font-bold uppercase tracking-wider">
@@ -86,7 +86,7 @@ export const DhoHeatmapSection: React.FC<DhoHeatmapSectionProps> = ({ facilities
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* Left Column: Equipment Breakdown Heatmap */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div className="lg:col-span-7 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Hospital Diagnostic Machine Uptime Heatmap
@@ -151,7 +151,7 @@ export const DhoHeatmapSection: React.FC<DhoHeatmapSectionProps> = ({ facilities
         </div>
 
         {/* Right Column: Research & MoHFW Epidemiological Validation */}
-        <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div className="lg:col-span-5 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
             <span className="material-symbols-outlined text-teal-700 text-lg">medical_services</span>
             Epidemiological Research & Validation

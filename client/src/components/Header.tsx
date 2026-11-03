@@ -2,31 +2,49 @@ import React from 'react';
 
 interface HeaderProps {
   activeTab: string;
+  mobileMenuOpen?: boolean;
+  onToggleMobileMenu?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = () => {
+export const Header: React.FC<HeaderProps> = ({ mobileMenuOpen, onToggleMobileMenu }) => {
   return (
     <header className="fixed top-0 left-0 right-0 h-16 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
-      <div className="h-16 w-full px-6 flex items-center justify-between gap-4">
+      <div className="h-16 w-full px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
         
-        {/* Brand & Facility Context */}
-        <div className="flex items-center gap-3.5 min-w-[280px]">
+        {/* Brand & Mobile Hamburger Toggle */}
+        <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
+          {onToggleMobileMenu && (
+            <button
+              type="button"
+              onClick={onToggleMobileMenu}
+              className="lg:hidden p-1.5 -ml-1 text-slate-700 hover:text-teal-800 hover:bg-slate-100 rounded-xl cursor-pointer transition active:scale-95"
+              aria-label="Toggle navigation menu"
+            >
+              <span className="material-symbols-outlined text-2xl">
+                {mobileMenuOpen ? 'close' : 'menu'}
+              </span>
+            </button>
+          )}
+
           <img
             src="/logo.png"
             alt="Ilaaj Track Official Logo"
-            className="w-10 h-10 rounded-xl object-contain shadow-xs border border-teal-100 bg-white"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-contain shadow-xs border border-teal-100 bg-white shrink-0"
           />
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-slate-900 tracking-tight leading-none">Ilaaj Track</span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-teal-100 text-teal-800">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-none truncate">
+                Ilaaj Track
+              </span>
+              <span className="hidden xs:inline-block px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-teal-100 text-teal-800 shrink-0">
                 ईलाज ट्रैक
               </span>
             </div>
-            <span className="text-xs font-medium text-slate-500 mt-1">
-              Rural Health Portal & Family Records
+            <span className="text-[10px] sm:text-xs font-medium text-slate-500 mt-0.5 truncate">
+              Rural Care Continuity
             </span>
           </div>
+
           <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
             <span className="text-xs font-medium">14 District Hospitals Connected</span>

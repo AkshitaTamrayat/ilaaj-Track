@@ -400,56 +400,56 @@ export const FamilyHealthSection: React.FC = () => {
     <div className="space-y-6">
       
       {/* Breadcrumb & Section Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 pb-2 border-b border-slate-200">
         <div className="flex items-center gap-3">
           <img
             src="/logo.png"
             alt="Ilaaj Track Logo"
-            className="w-10 h-10 rounded-xl object-contain shadow-xs border border-teal-100 bg-white"
+            className="w-10 h-10 rounded-xl object-contain shadow-xs border border-teal-100 bg-white shrink-0"
           />
           <div>
-            <h1 className="text-xl font-bold text-slate-900 leading-tight">
-              Family Health Records & Check-up Vault (परिवार स्वास्थ्य खाता)
+            <h1 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
+              Family Health Vault (परिवार स्वास्थ्य खाता)
             </h1>
             <p className="text-xs text-slate-500">
-              AI Photo Scanner • Prescription Slips • Lab Reports • Contact Helpline • Check-up Tracker
+              AI Photo Scanner • Prescription Slips • Lab Reports • Contact Helpline
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setShowPrintModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs cursor-pointer transition"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs cursor-pointer transition active:scale-95"
           >
             <span className="material-symbols-outlined text-base text-teal-700">print</span>
-            Health Card (स्वास्थ्य कार्ड)
+            Health Card
           </button>
           <button
             type="button"
             onClick={() => setShowAddMemberModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition active:scale-95"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition active:scale-95"
           >
             <span className="material-symbols-outlined text-base">person_add</span>
-            + Add Member (नया सदस्य)
+            + Add Member
           </button>
         </div>
       </div>
 
       {/* Family Member Switcher Horizontal Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 sm:p-4 space-y-3">
         <div className="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
           <span className="flex items-center gap-1.5">
             <span className="material-symbols-outlined text-teal-700 text-base">groups</span>
             Select Family Member (परिवार का सदस्य चुनें)
           </span>
           <span className="text-[11px] text-teal-800 font-semibold lowercase">
-            {members.length} members registered
+            {members.length} members
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
           {members.map((member) => {
             const isSelected = member.id === selectedMember?.id;
             return (
@@ -491,25 +491,25 @@ export const FamilyHealthSection: React.FC = () => {
 
       {/* Selected Member Hero Card */}
       {selectedMember && (
-        <div className="bg-gradient-to-r from-teal-900 to-slate-900 rounded-2xl text-white p-6 shadow-md relative overflow-hidden">
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
+        <div className="bg-gradient-to-r from-teal-900 to-slate-900 rounded-2xl text-white p-4 sm:p-6 shadow-md relative overflow-hidden">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
             
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white font-bold text-2xl shadow-inner">
-                <span className="material-symbols-outlined text-3xl">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3.5 sm:gap-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white font-bold text-2xl shadow-inner shrink-0">
+                <span className="material-symbols-outlined text-2xl sm:text-3xl">
                   {selectedMember.gender === 'Female' ? 'face_3' : 'face'}
                 </span>
               </div>
               <div className="space-y-1">
-                <div className="flex items-center gap-2.5">
-                  <h2 className="text-lg md:text-xl font-bold tracking-tight">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-base sm:text-lg md:text-xl font-bold tracking-tight">
                     {selectedMember.name}
                   </h2>
-                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-teal-400 text-teal-950">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-teal-400 text-teal-950">
                     {selectedMember.relation} • {selectedMember.age} Yrs
                   </span>
                 </div>
-                <div className="flex flex-wrap items-center gap-3 text-xs text-teal-100">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-teal-100">
                   <span className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-sm">badge</span>
                     ABHA ID: <strong className="font-mono text-white">{selectedMember.abhaId}</strong>
@@ -541,19 +541,19 @@ export const FamilyHealthSection: React.FC = () => {
             </div>
 
             {/* Quick Metrics Strip */}
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md p-2.5 rounded-xl border border-white/15">
-              <div className="text-center px-3">
-                <div className="text-lg font-bold text-white">{selectedMember.prescriptions.length}</div>
+            <div className="flex items-center justify-around sm:justify-start gap-2 sm:gap-3 bg-white/10 backdrop-blur-md p-2.5 rounded-xl border border-white/15 w-full md:w-auto">
+              <div className="text-center px-2 sm:px-3">
+                <div className="text-base sm:text-lg font-bold text-white">{selectedMember.prescriptions.length}</div>
                 <div className="text-[10px] text-teal-200">Slips (पर्ची)</div>
               </div>
-              <div className="w-px h-8 bg-white/20"></div>
-              <div className="text-center px-3">
-                <div className="text-lg font-bold text-white">{selectedMember.labReports.length}</div>
+              <div className="w-px h-7 bg-white/20"></div>
+              <div className="text-center px-2 sm:px-3">
+                <div className="text-base sm:text-lg font-bold text-white">{selectedMember.labReports.length}</div>
                 <div className="text-[10px] text-teal-200">Reports (रिपोर्ट)</div>
               </div>
-              <div className="w-px h-8 bg-white/20"></div>
-              <div className="text-center px-3">
-                <div className="text-lg font-bold text-white">{selectedMember.checkups.length}</div>
+              <div className="w-px h-7 bg-white/20"></div>
+              <div className="text-center px-2 sm:px-3">
+                <div className="text-base sm:text-lg font-bold text-white">{selectedMember.checkups.length}</div>
                 <div className="text-[10px] text-teal-200">Checkups (जांच)</div>
               </div>
             </div>
@@ -563,19 +563,19 @@ export const FamilyHealthSection: React.FC = () => {
       )}
 
       {/* Sub-Tabs: Prescriptions, Reports, Check-ups */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200">
+        <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto pb-1">
           <button
             type="button"
             onClick={() => setActiveSubTab('prescriptions')}
-            className={`flex items-center gap-2 px-4 py-2.5 border-b-2 font-bold text-xs transition cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 border-b-2 font-bold text-xs transition cursor-pointer shrink-0 ${
               activeSubTab === 'prescriptions'
                 ? 'border-teal-700 text-teal-800'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            <span className="material-symbols-outlined text-lg">prescriptions</span>
-            <span>Doctor Prescriptions & Slips (दवाई की पर्ची)</span>
+            <span className="material-symbols-outlined text-base sm:text-lg">prescriptions</span>
+            <span>Doctor Slips (दवाई पर्ची)</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-700">
               {selectedMember?.prescriptions.length || 0}
             </span>
@@ -584,14 +584,14 @@ export const FamilyHealthSection: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveSubTab('reports')}
-            className={`flex items-center gap-2 px-4 py-2.5 border-b-2 font-bold text-xs transition cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 border-b-2 font-bold text-xs transition cursor-pointer shrink-0 ${
               activeSubTab === 'reports'
                 ? 'border-teal-700 text-teal-800'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            <span className="material-symbols-outlined text-lg">lab_profile</span>
-            <span>Diagnostic Lab Reports (जांच रिपोर्ट्स)</span>
+            <span className="material-symbols-outlined text-base sm:text-lg">lab_profile</span>
+            <span>Lab Reports (जांच रिपोर्ट्स)</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-700">
               {selectedMember?.labReports.length || 0}
             </span>
@@ -600,14 +600,14 @@ export const FamilyHealthSection: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveSubTab('checkups')}
-            className={`flex items-center gap-2 px-4 py-2.5 border-b-2 font-bold text-xs transition cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 border-b-2 font-bold text-xs transition cursor-pointer shrink-0 ${
               activeSubTab === 'checkups'
                 ? 'border-teal-700 text-teal-800'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            <span className="material-symbols-outlined text-lg">event_available</span>
-            <span>Follow-up & Check-up Timeline (नियमित जांच)</span>
+            <span className="material-symbols-outlined text-base sm:text-lg">event_available</span>
+            <span>Check-ups (नियमित जांच)</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-700">
               {selectedMember?.checkups.length || 0}
             </span>
@@ -615,7 +615,7 @@ export const FamilyHealthSection: React.FC = () => {
         </div>
 
         {/* Tab specific action buttons */}
-        <div>
+        <div className="w-full sm:w-auto pb-2 sm:pb-0">
           {activeSubTab === 'prescriptions' && (
             <button
               type="button"
@@ -624,7 +624,7 @@ export const FamilyHealthSection: React.FC = () => {
                 setRxOcrSuccess(false);
                 setRxImagePreview(null);
               }}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition active:scale-95"
             >
               <span className="material-symbols-outlined text-base">photo_camera</span>
               📸 Scan / Add Prescription (पर्ची फोटो लें)
@@ -639,7 +639,7 @@ export const FamilyHealthSection: React.FC = () => {
                 setReportOcrSuccess(false);
                 setReportImagePreview(null);
               }}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition active:scale-95"
             >
               <span className="material-symbols-outlined text-base">photo_camera</span>
               📸 Scan / Add Report (रिपोर्ट फोटो लें)
@@ -650,7 +650,7 @@ export const FamilyHealthSection: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowAddCheckupModal(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition active:scale-95"
             >
               <span className="material-symbols-outlined text-base">add_alarm</span>
               + Schedule Check-up (जांच तय करें)
@@ -967,8 +967,8 @@ export const FamilyHealthSection: React.FC = () => {
       {/* Modal 1: Add Family Member (With Strictly Non-Negative Age) */}
       {/* ========================================================= */}
       {showAddMemberModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl max-w-md w-full p-4 sm:p-6 space-y-4 my-auto max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700">person_add</span>
@@ -1114,8 +1114,8 @@ export const FamilyHealthSection: React.FC = () => {
       {/* Modal 2: Add / Scan Prescription Slip (Photo OCR + Fully Editable Fields) */}
       {/* ========================================================================= */}
       {showAddRxModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-6 space-y-4 my-8">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-4 sm:p-6 space-y-4 my-auto max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700">document_scanner</span>
@@ -1259,38 +1259,36 @@ export const FamilyHealthSection: React.FC = () => {
                 <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                   {rxMedicinesList.map((med, idx) => (
                     <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                      <div className="grid grid-cols-12 gap-2 items-center">
-                        <div className="col-span-6">
+                      <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                        <div className="w-full sm:flex-1">
                           <input
                             type="text"
                             placeholder="Medicine Name (e.g. Tab. Telmisartan)"
                             value={med.name}
                             onChange={(e) => handleUpdateMedicineRow(idx, 'name', e.target.value)}
-                            className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                            className="w-full p-2 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-800"
                           />
                         </div>
-                        <div className="col-span-3">
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
                           <input
                             type="text"
                             placeholder="Dosage (40mg)"
                             value={med.dosage}
                             onChange={(e) => handleUpdateMedicineRow(idx, 'dosage', e.target.value)}
-                            className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                            className="w-1/2 sm:w-28 p-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
                           />
-                        </div>
-                        <div className="col-span-3 flex items-center gap-1">
                           <input
                             type="text"
                             placeholder="Duration (30 Days)"
                             value={med.duration}
                             onChange={(e) => handleUpdateMedicineRow(idx, 'duration', e.target.value)}
-                            className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                            className="w-1/2 sm:w-28 p-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
                           />
                           {rxMedicinesList.length > 1 && (
                             <button
                               type="button"
                               onClick={() => handleRemoveMedicineRow(idx)}
-                              className="text-rose-500 hover:text-rose-700 p-1"
+                              className="text-rose-500 hover:text-rose-700 p-1.5 shrink-0"
                               title="Delete row"
                             >
                               <span className="material-symbols-outlined text-base">delete</span>
@@ -1299,20 +1297,20 @@ export const FamilyHealthSection: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <input
                           type="text"
                           placeholder="Frequency (e.g. 1-0-1 सुबह-रात)"
                           value={med.frequency}
                           onChange={(e) => handleUpdateMedicineRow(idx, 'frequency', e.target.value)}
-                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                          className="w-full p-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
                         />
                         <input
                           type="text"
                           placeholder="Instructions (e.g. After breakfast with warm water)"
                           value={med.instructions || ''}
                           onChange={(e) => handleUpdateMedicineRow(idx, 'instructions', e.target.value)}
-                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                          className="w-full p-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
                         />
                       </div>
                     </div>
@@ -1366,8 +1364,8 @@ export const FamilyHealthSection: React.FC = () => {
       {/* Modal 3: Add / Scan Lab Report (Photo OCR + Fully Editable Fields) */}
       {/* ========================================================================= */}
       {showAddReportModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-6 space-y-4 my-8">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-4 sm:p-6 space-y-4 my-auto max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700">science</span>
@@ -1525,50 +1523,51 @@ export const FamilyHealthSection: React.FC = () => {
 
                 <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                   {reportKeyValuesList.map((param, idx) => (
-                    <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-12 gap-2 items-center">
-                      <div className="col-span-4">
+                    <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                      <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
                         <input
                           type="text"
                           placeholder="Parameter (e.g. Hemoglobin)"
                           value={param.parameter}
                           onChange={(e) => handleUpdateParameterRow(idx, 'parameter', e.target.value)}
-                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                          className="w-full sm:flex-1 p-2 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-800"
                         />
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                          <input
+                            type="text"
+                            placeholder="Value (e.g. 11.2 g/dL)"
+                            value={param.value}
+                            onChange={(e) => handleUpdateParameterRow(idx, 'value', e.target.value)}
+                            className="w-1/2 sm:w-28 p-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Normal (12 - 15)"
+                            value={param.normalRange}
+                            onChange={(e) => handleUpdateParameterRow(idx, 'normalRange', e.target.value)}
+                            className="w-1/2 sm:w-28 p-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                          />
+                        </div>
                       </div>
-                      <div className="col-span-3">
-                        <input
-                          type="text"
-                          placeholder="Value (e.g. 11.2 g/dL)"
-                          value={param.value}
-                          onChange={(e) => handleUpdateParameterRow(idx, 'value', e.target.value)}
-                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
-                        />
-                      </div>
-                      <div className="col-span-3">
-                        <input
-                          type="text"
-                          placeholder="Normal (12 - 15)"
-                          value={param.normalRange}
-                          onChange={(e) => handleUpdateParameterRow(idx, 'normalRange', e.target.value)}
-                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
-                        />
-                      </div>
-                      <div className="col-span-2 flex items-center justify-end gap-1">
-                        <label className="flex items-center gap-1 text-[10px] text-rose-700 cursor-pointer">
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-200/60">
+                        <label className="flex items-center gap-1.5 text-xs font-medium text-rose-700 cursor-pointer">
                           <input
                             type="checkbox"
+                            className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500"
                             checked={param.isAbnormal || false}
                             onChange={(e) => handleUpdateParameterRow(idx, 'isAbnormal', e.target.checked)}
                           />
-                          High/Low
+                          <span>Abnormal / Out of Range (असामान्य)</span>
                         </label>
                         {reportKeyValuesList.length > 1 && (
                           <button
                             type="button"
                             onClick={() => handleRemoveParameterRow(idx)}
-                            className="text-rose-500 hover:text-rose-700 p-1"
+                            className="text-rose-500 hover:text-rose-700 p-1 flex items-center gap-1 text-xs"
+                            title="Remove parameter"
                           >
-                            <span className="material-symbols-outlined text-base">delete</span>
+                            <span className="material-symbols-outlined text-sm">delete</span>
+                            <span className="text-[11px]">Remove</span>
                           </button>
                         )}
                       </div>
@@ -1610,8 +1609,8 @@ export const FamilyHealthSection: React.FC = () => {
 
       {/* Modal 4: Schedule Checkup */}
       {showAddCheckupModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl max-w-md w-full p-4 sm:p-6 space-y-4 my-auto max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700">calendar_add_on</span>
@@ -1708,8 +1707,8 @@ export const FamilyHealthSection: React.FC = () => {
 
       {/* Modal 5: Printable / Shareable Rural Health Card */}
       {showPrintModal && selectedMember && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-5">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-4 sm:p-6 space-y-4 sm:space-y-5 my-auto max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <img src="/logo.png" alt="Logo" className="w-9 h-9 object-contain rounded-lg" />
@@ -1788,8 +1787,8 @@ export const FamilyHealthSection: React.FC = () => {
 
       {/* Lightbox Image Preview Modal */}
       {lightboxImageUrl && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="max-w-2xl w-full bg-slate-900 rounded-3xl p-4 space-y-3 border border-slate-700">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-4">
+          <div className="max-w-3xl w-full bg-slate-900 rounded-3xl p-3 sm:p-4 space-y-3 border border-slate-700 shadow-2xl">
             <div className="flex items-center justify-between text-white pb-2 border-b border-slate-800">
               <span className="text-xs font-bold">Original Medical Document / Slip Photo</span>
               <button

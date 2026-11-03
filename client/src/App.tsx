@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
+import { BottomNavBar } from './components/BottomNavBar';
 import { FamilyHealthSection } from './components/FamilyHealthSection';
 import { VoiceTriageSection } from './components/VoiceTriageSection';
 import { DynamicMapSection } from './components/DynamicMapSection';
@@ -11,6 +12,7 @@ import type { Facility, Referral } from './types';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('family');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,14 +58,23 @@ export function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
       {/* Fixed Top Header */}
-      <Header activeTab={activeTab} />
+      <Header
+        activeTab={activeTab}
+        mobileMenuOpen={mobileMenuOpen}
+        onToggleMobileMenu={() => setMobileMenuOpen(prev => !prev)}
+      />
 
-      {/* Fixed Left Sidebar Navigation */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* Fixed Left Sidebar Navigation (Desktop) & Slide-Over Drawer (Mobile/Tablet) */}
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        mobileMenuOpen={mobileMenuOpen}
+        onCloseMobileMenu={() => setMobileMenuOpen(false)}
+      />
 
-      {/* Main Content Area */}
-      <div className="pl-64 pt-16">
-        <main className="w-full p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+      {/* Main Content Area - Fluid responsive padding for phones, tablets & desktop */}
+      <div className="lg:pl-64 pt-16 pb-20 lg:pb-8 w-full min-h-screen overflow-x-hidden">
+        <main className="w-full p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-5 sm:space-y-6">
           {loading ? (
             <div className="flex items-center justify-center h-64 text-slate-500 text-sm font-medium">
               <span className="material-symbols-outlined text-2xl text-teal-700 animate-spin mr-2">
@@ -113,6 +124,9 @@ export function App() {
           </footer>
         </main>
       </div>
+
+      {/* Persistent Mobile & Tablet Thumb-Friendly Bottom Navigation Bar */}
+      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }

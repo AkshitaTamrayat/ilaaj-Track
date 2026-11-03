@@ -237,7 +237,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
       </div>
 
       {/* Patient Header & Vitals Card (High-Contrast Daylight Friendly) */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-5 sm:space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Patient Identity Column (5 Cols) */}
@@ -362,7 +362,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* Module 1: Friendly Voice Dictation & Symptom Extraction (7 Cols) */}
-        <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-5">
+        <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 flex flex-col justify-between space-y-5">
           <div className="space-y-4">
             
             {/* Card Header with Language Selector & Mic Status */}
@@ -577,7 +577,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
         </div>
 
         {/* Module 2: Prescription Slip Optical Scanner (5 Cols) */}
-        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-5">
+        <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 flex flex-col justify-between space-y-5">
           <div className="space-y-4">
             
             {/* Card Header */}
@@ -674,7 +674,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
       </div>
 
       {/* Module 3: 'One-Trip Care Bundle' Package Card (Clean Daylight Medical Card) */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-5 sm:space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200">
           <div>
             <div className="flex items-center gap-2.5">
