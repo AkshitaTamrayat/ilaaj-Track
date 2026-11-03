@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import type { FamilyMember } from '../types';
-import { fetchFamilyMembers, addFamilyMember, addPrescription, addLabReport, addCheckup, toggleCheckup } from '../services/api';
+import React, { useState, useEffect, useRef } from 'react';
+import type { FamilyMember, PrescriptionMedicine, LabParameter } from '../types';
+import { fetchFamilyMembers, addFamilyMember, addPrescription, addLabReport, addCheckup, toggleCheckup, runPrescriptionOCR, runLabReportOCR } from '../services/api';
 import confetti from 'canvas-confetti';
 
 export const FamilyHealthSection: React.FC = () => {
@@ -15,6 +15,19 @@ export const FamilyHealthSection: React.FC = () => {
   const [showAddReportModal, setShowAddReportModal] = useState<boolean>(false);
   const [showAddCheckupModal, setShowAddCheckupModal] = useState<boolean>(false);
   const [showPrintModal, setShowPrintModal] = useState<boolean>(false);
+  const [lightboxImageUrl, setLightboxImageUrl] = useState<string | null>(null);
+
+  // OCR Analysis loading states
+  const [isAnalyzingRx, setIsAnalyzingRx] = useState<boolean>(false);
+  const [rxOcrSuccess, setRxOcrSuccess] = useState<boolean>(false);
+  const [rxImagePreview, setRxImagePreview] = useState<string | null>(null);
+
+  const [isAnalyzingReport, setIsAnalyzingReport] = useState<boolean>(false);
+  const [reportOcrSuccess, setReportOcrSuccess] = useState<boolean>(false);
+  const [reportImagePreview, setReportImagePreview] = useState<string | null>(null);
+
+  const rxFileInputRef = useRef<HTMLInputElement>(null);
+  const reportFileInputRef = useRef<HTMLInputElement>(null);
 
   // Form states
   const [newMemberForm, setNewMemberForm] = useState({
@@ -23,31 +36,38 @@ export const FamilyHealthSection: React.FC = () => {
     age: '',
     gender: 'Female' as const,
     bloodGroup: 'B+',
+    contactNumber: '',
     chronicConditions: '',
     village: 'Semadoh Village'
   });
 
+  // Prescription form with editable medicines list
   const [newRxForm, setNewRxForm] = useState({
     doctorName: '',
     facilityName: '',
+    contactNumber: '',
     diagnosis: '',
-    medName: '',
-    dosage: '',
-    frequency: '1-0-1 (सुबह-रात)',
-    duration: '15 Days',
-    notes: ''
+    notes: '',
+    investigations: ''
   });
 
+  const [rxMedicinesList, setRxMedicinesList] = useState<PrescriptionMedicine[]>([
+    { name: '', dosage: '', frequency: '1-0-1 (सुबह-रात)', duration: '15 Days', instructions: 'After food' }
+  ]);
+
+  // Lab Report form with editable parameters list
   const [newReportForm, setNewReportForm] = useState({
     testName: '',
     category: 'BLOOD' as const,
     facilityName: '',
-    paramName: '',
-    paramValue: '',
-    paramRange: '',
+    contactNumber: '',
     summaryStatus: 'NORMAL' as const,
     doctorRemarks: ''
   });
+
+  const [reportKeyValuesList, setReportKeyValuesList] = useState<LabParameter[]>([
+    { parameter: '', value: '', normalRange: '', isAbnormal: false }
+  ]);
 
   const [newCheckupForm, setNewCheckupForm] = useState({
     title: '',
@@ -79,14 +99,157 @@ export const FamilyHealthSection: React.FC = () => {
 
   const selectedMember = members.find(m => m.id === selectedMemberId) || members[0];
 
-  // Handlers
+  // ==========================================
+  // OCR Photo Handlers
+  // ==========================================
+
+  const handleScanPrescriptionPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Create local image preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      setRxImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setIsAnalyzingRx(true);
+    setRxOcrSuccess(false);
+
+    try {
+      const res = await runPrescriptionOCR(file);
+      if (res && res.result) {
+        const ocr = res.result;
+        setNewRxForm({
+          doctorName: ocr.detectedDoctor || '',
+          facilityName: ocr.facilityName || 'District Hospital / Community Clinic',
+          contactNumber: ocr.contactNumber || '+91 721 266 2300',
+          diagnosis: ocr.diagnosis || 'Clinical Consultation',
+          notes: ocr.doctorNotes || 'Take medications regularly and follow diet instructions.',
+          investigations: Array.isArray(ocr.prescribedInvestigations) ? ocr.prescribedInvestigations.join(', ') : ''
+        });
+
+        if (Array.isArray(ocr.prescribedMedicines) && ocr.prescribedMedicines.length > 0) {
+          const parsedMeds: PrescriptionMedicine[] = ocr.prescribedMedicines.map((m: any) => {
+            if (typeof m === 'string') {
+              return {
+                name: m,
+                dosage: 'Standard',
+                frequency: '1-0-1 (सुबह-रात)',
+                duration: '15 Days',
+                instructions: 'Take after meals'
+              };
+            }
+            return {
+              name: m.name || 'Prescribed Medicine',
+              dosage: m.dosage || 'Standard',
+              frequency: m.frequency || '1-0-1 (सुबह-रात)',
+              duration: m.duration || '15 Days',
+              instructions: m.instructions || 'Take with water'
+            };
+          });
+          setRxMedicinesList(parsedMeds);
+        }
+
+        setRxOcrSuccess(true);
+        confetti({ particleCount: 40, spread: 50 });
+      }
+    } finally {
+      setIsAnalyzingRx(false);
+    }
+  };
+
+  const handleScanReportPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Create local image preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      setReportImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setIsAnalyzingReport(true);
+    setReportOcrSuccess(false);
+
+    try {
+      const res = await runLabReportOCR(file);
+      if (res && res.result) {
+        const ocr = res.result;
+        setNewReportForm({
+          testName: ocr.testName || 'Diagnostic Lab Investigation',
+          category: ocr.category || 'BLOOD',
+          facilityName: ocr.facilityName || 'District Hospital Diagnostic Laboratory',
+          contactNumber: ocr.contactNumber || '+91 721 266 2304',
+          summaryStatus: ocr.summaryStatus || 'NORMAL',
+          doctorRemarks: ocr.doctorRemarks || 'All values verified by attending pathologist.'
+        });
+
+        if (Array.isArray(ocr.keyValues) && ocr.keyValues.length > 0) {
+          setReportKeyValuesList(ocr.keyValues);
+        }
+
+        setReportOcrSuccess(true);
+        confetti({ particleCount: 40, spread: 50 });
+      }
+    } finally {
+      setIsAnalyzingReport(false);
+    }
+  };
+
+  // Medicine list modifiers
+  const handleAddMedicineRow = () => {
+    setRxMedicinesList([
+      ...rxMedicinesList,
+      { name: '', dosage: '', frequency: '1-0-1 (सुबह-रात)', duration: '15 Days', instructions: 'After meals' }
+    ]);
+  };
+
+  const handleRemoveMedicineRow = (index: number) => {
+    setRxMedicinesList(rxMedicinesList.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateMedicineRow = (index: number, field: keyof PrescriptionMedicine, value: string) => {
+    const updated = [...rxMedicinesList];
+    updated[index] = { ...updated[index], [field]: value };
+    setRxMedicinesList(updated);
+  };
+
+  // Parameter list modifiers
+  const handleAddParameterRow = () => {
+    setReportKeyValuesList([
+      ...reportKeyValuesList,
+      { parameter: '', value: '', normalRange: '', isAbnormal: false }
+    ]);
+  };
+
+  const handleRemoveParameterRow = (index: number) => {
+    setReportKeyValuesList(reportKeyValuesList.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateParameterRow = (index: number, field: keyof LabParameter, value: any) => {
+    const updated = [...reportKeyValuesList];
+    updated[index] = { ...updated[index], [field]: value };
+    setReportKeyValuesList(updated);
+  };
+
+  // ==========================================
+  // Form Submission Handlers
+  // ==========================================
+
   const handleCreateMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMemberForm.name.trim()) return;
 
+    // Strictly positive age clamp
+    const safeAge = Math.max(0, Math.min(125, parseInt(newMemberForm.age, 10) || 0));
+
     const res = await addFamilyMember({
       ...newMemberForm,
-      age: Number(newMemberForm.age) || 30,
+      age: safeAge,
+      contactNumber: newMemberForm.contactNumber || '+91 98765 43210',
       chronicConditions: newMemberForm.chronicConditions ? newMemberForm.chronicConditions.split(',').map(s => s.trim()) : []
     });
 
@@ -101,6 +264,7 @@ export const FamilyHealthSection: React.FC = () => {
         age: '',
         gender: 'Female',
         bloodGroup: 'B+',
+        contactNumber: '',
         chronicConditions: '',
         village: 'Semadoh Village'
       });
@@ -111,37 +275,37 @@ export const FamilyHealthSection: React.FC = () => {
     e.preventDefault();
     if (!selectedMember) return;
 
+    const filteredMeds = rxMedicinesList.filter(m => m.name.trim().length > 0);
     const res = await addPrescription(selectedMember.id, {
-      doctorName: newRxForm.doctorName || 'Medical Officer',
+      doctorName: newRxForm.doctorName || 'Attending Doctor',
       facilityName: newRxForm.facilityName || 'Primary Health Center',
+      contactNumber: newRxForm.contactNumber,
       diagnosis: newRxForm.diagnosis || 'General Consultation',
-      medicines: [
-        {
-          name: newRxForm.medName || 'Tab. Paracetamol 650mg',
-          dosage: newRxForm.dosage || '650mg',
-          frequency: newRxForm.frequency,
-          duration: newRxForm.duration,
-          instructions: 'Take after meals'
-        }
+      medicines: filteredMeds.length > 0 ? filteredMeds : [
+        { name: 'Tab. Paracetamol 650mg', dosage: '650mg', frequency: '1-0-1', duration: '5 Days' }
       ],
-      investigations: ['Routine Follow-up'],
-      notes: newRxForm.notes
+      investigations: newRxForm.investigations ? newRxForm.investigations.split(',').map(s => s.trim()) : [],
+      notes: newRxForm.notes,
+      imageUrl: rxImagePreview || undefined
     });
 
     if (res && res.success) {
       confetti({ particleCount: 40, spread: 50 });
       await loadMembers();
       setShowAddRxModal(false);
+      setRxImagePreview(null);
+      setRxOcrSuccess(false);
       setNewRxForm({
         doctorName: '',
         facilityName: '',
+        contactNumber: '',
         diagnosis: '',
-        medName: '',
-        dosage: '',
-        frequency: '1-0-1 (सुबह-रात)',
-        duration: '15 Days',
-        notes: ''
+        notes: '',
+        investigations: ''
       });
+      setRxMedicinesList([
+        { name: '', dosage: '', frequency: '1-0-1 (सुबह-रात)', duration: '15 Days', instructions: 'After food' }
+      ]);
     }
   };
 
@@ -149,36 +313,37 @@ export const FamilyHealthSection: React.FC = () => {
     e.preventDefault();
     if (!selectedMember) return;
 
+    const filteredParams = reportKeyValuesList.filter(p => p.parameter.trim().length > 0);
     const res = await addLabReport(selectedMember.id, {
-      testName: newReportForm.testName || 'Routine Diagnostic Test',
+      testName: newReportForm.testName || 'Diagnostic Investigation',
       category: newReportForm.category,
-      facilityName: newReportForm.facilityName || 'PHC Diagnostic Lab',
+      facilityName: newReportForm.facilityName || 'District Hospital Diagnostic Lab',
+      contactNumber: newReportForm.contactNumber,
       summaryStatus: newReportForm.summaryStatus,
-      keyValues: [
-        {
-          parameter: newReportForm.paramName || 'Observed Parameter',
-          value: newReportForm.paramValue || 'Normal',
-          normalRange: newReportForm.paramRange || 'Standard',
-          isAbnormal: newReportForm.summaryStatus !== 'NORMAL'
-        }
+      keyValues: filteredParams.length > 0 ? filteredParams : [
+        { parameter: 'Observed Parameter', value: 'Normal', normalRange: 'Standard', isAbnormal: false }
       ],
-      doctorRemarks: newReportForm.doctorRemarks || 'Report verified by attending medical officer.'
+      doctorRemarks: newReportForm.doctorRemarks || 'Verified by attending medical officer.',
+      imageUrl: reportImagePreview || undefined
     });
 
     if (res && res.success) {
       confetti({ particleCount: 40, spread: 50 });
       await loadMembers();
       setShowAddReportModal(false);
+      setReportImagePreview(null);
+      setReportOcrSuccess(false);
       setNewReportForm({
         testName: '',
         category: 'BLOOD',
         facilityName: '',
-        paramName: '',
-        paramValue: '',
-        paramRange: '',
+        contactNumber: '',
         summaryStatus: 'NORMAL',
         doctorRemarks: ''
       });
+      setReportKeyValuesList([
+        { parameter: '', value: '', normalRange: '', isAbnormal: false }
+      ]);
     }
   };
 
@@ -247,7 +412,7 @@ export const FamilyHealthSection: React.FC = () => {
               Family Health Records & Check-up Vault (परिवार स्वास्थ्य खाता)
             </h1>
             <p className="text-xs text-slate-500">
-              Prescription Slips • Diagnostic Lab Reports • Upcoming ASHA Visits • Digital Health ID
+              AI Photo Scanner • Prescription Slips • Lab Reports • Contact Helpline • Check-up Tracker
             </p>
           </div>
         </div>
@@ -353,6 +518,15 @@ export const FamilyHealthSection: React.FC = () => {
                   <span>Blood: <strong className="text-white">{selectedMember.bloodGroup}</strong></span>
                   <span>•</span>
                   <span>{selectedMember.village}</span>
+                  {selectedMember.contactNumber && (
+                    <>
+                      <span>•</span>
+                      <a href={`tel:${selectedMember.contactNumber}`} className="flex items-center gap-1 text-teal-200 hover:text-white underline">
+                        <span className="material-symbols-outlined text-xs">call</span>
+                        {selectedMember.contactNumber}
+                      </a>
+                    </>
+                  )}
                 </div>
                 {selectedMember.chronicConditions.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1.5 pt-1">
@@ -389,7 +563,7 @@ export const FamilyHealthSection: React.FC = () => {
       )}
 
       {/* Sub-Tabs: Prescriptions, Reports, Check-ups */}
-      <div className="flex items-center justify-between border-b border-slate-200">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -445,22 +619,30 @@ export const FamilyHealthSection: React.FC = () => {
           {activeSubTab === 'prescriptions' && (
             <button
               type="button"
-              onClick={() => setShowAddRxModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition"
+              onClick={() => {
+                setShowAddRxModal(true);
+                setRxOcrSuccess(false);
+                setRxImagePreview(null);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition"
             >
-              <span className="material-symbols-outlined text-base">add_photo_alternate</span>
-              + Upload Prescription (पर्ची जोड़ें)
+              <span className="material-symbols-outlined text-base">photo_camera</span>
+              📸 Scan / Add Prescription (पर्ची फोटो लें)
             </button>
           )}
 
           {activeSubTab === 'reports' && (
             <button
               type="button"
-              onClick={() => setShowAddReportModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition"
+              onClick={() => {
+                setShowAddReportModal(true);
+                setReportOcrSuccess(false);
+                setReportImagePreview(null);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition"
             >
-              <span className="material-symbols-outlined text-base">post_add</span>
-              + Add Report (रिपोर्ट जोड़ें)
+              <span className="material-symbols-outlined text-base">photo_camera</span>
+              📸 Scan / Add Report (रिपोर्ट फोटो लें)
             </button>
           )}
 
@@ -468,7 +650,7 @@ export const FamilyHealthSection: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowAddCheckupModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition"
             >
               <span className="material-symbols-outlined text-base">add_alarm</span>
               + Schedule Check-up (जांच तय करें)
@@ -484,81 +666,106 @@ export const FamilyHealthSection: React.FC = () => {
             <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-3">
               <span className="material-symbols-outlined text-4xl text-slate-400">prescriptions</span>
               <p className="text-sm font-bold text-slate-700">No prescription slips added yet</p>
-              <p className="text-xs text-slate-500">Upload doctor slips or prescriptions for this family member.</p>
+              <p className="text-xs text-slate-500">Take a photo of your paper slip or upload doctor prescriptions.</p>
               <button
                 type="button"
                 onClick={() => setShowAddRxModal(true)}
                 className="px-4 py-2 rounded-xl bg-teal-700 text-white text-xs font-bold shadow-sm"
               >
-                + Upload First Prescription Slip
+                📸 Scan / Upload Prescription Slip
               </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {selectedMember?.prescriptions.map((rx) => (
-                <div key={rx.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4 hover:border-teal-300 transition">
-                  <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
-                    <div className="space-y-1">
-                      <span className="text-[11px] font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
-                        Date: {rx.date}
-                      </span>
-                      <h3 className="text-sm font-bold text-slate-900 mt-1">{rx.doctorName}</h3>
-                      <p className="text-xs text-slate-500">{rx.facilityName}</p>
-                    </div>
-                    <span className="material-symbols-outlined text-teal-700 text-2xl">receipt_long</span>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Diagnosis (रोग/स्थिति):
-                    </div>
-                    <p className="text-xs font-semibold text-slate-800 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                      {rx.diagnosis}
-                    </p>
-                  </div>
-
-                  {/* Medicines List with Rural Dosage Guide */}
-                  <div className="space-y-2">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Prescribed Medicines (दवाइयां):
-                    </div>
-                    <div className="space-y-1.5">
-                      {rx.medicines.map((med, idx) => (
-                        <div key={idx} className="p-2.5 rounded-lg bg-teal-50/50 border border-teal-100 flex items-center justify-between text-xs">
-                          <div className="space-y-0.5">
-                            <span className="font-bold text-teal-950 block">{med.name}</span>
-                            <span className="text-[11px] text-teal-700">{med.frequency} • {med.duration}</span>
-                            {med.instructions && (
-                              <span className="text-[10px] text-slate-500 block italic">{med.instructions}</span>
-                            )}
-                          </div>
-                          <span className="px-2 py-0.5 rounded bg-white text-teal-800 font-bold border border-teal-200 text-[11px]">
-                            {med.dosage}
+                <div key={rx.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4 hover:border-teal-300 transition flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-[11px] font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
+                            Date: {rx.date}
                           </span>
+                          {rx.imageUrl && (
+                            <button
+                              type="button"
+                              onClick={() => setLightboxImageUrl(rx.imageUrl || null)}
+                              className="inline-flex items-center gap-1 text-[10px] font-bold text-teal-700 bg-white border border-teal-200 px-2 py-0.5 rounded hover:bg-teal-50 cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-xs">image</span>
+                              View Original Photo (मूल पर्ची देखें)
+                            </button>
+                          )}
                         </div>
-                      ))}
+                        <h3 className="text-sm font-bold text-slate-900 mt-1">{rx.doctorName}</h3>
+                        <p className="text-xs text-slate-500">{rx.facilityName}</p>
+                        {rx.contactNumber && (
+                          <div className="pt-0.5">
+                            <a
+                              href={`tel:${rx.contactNumber}`}
+                              className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 bg-teal-50/70 hover:bg-teal-100 px-2 py-0.5 rounded border border-teal-200 transition"
+                            >
+                              <span className="material-symbols-outlined text-xs text-teal-700">call</span>
+                              Call Clinic: {rx.contactNumber}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                      <span className="material-symbols-outlined text-teal-700 text-2xl">receipt_long</span>
                     </div>
-                  </div>
 
-                  {/* Investigations / Tests */}
-                  {rx.investigations && rx.investigations.length > 0 && (
-                    <div className="space-y-1 pt-1">
-                      <div className="text-[11px] font-bold text-slate-500">Ordered Diagnostic Tests:</div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {rx.investigations.map((inv, i) => (
-                          <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium">
-                            {inv}
-                          </span>
+                    <div className="space-y-1.5">
+                      <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Diagnosis (रोग/स्थिति):
+                      </div>
+                      <p className="text-xs font-semibold text-slate-800 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        {rx.diagnosis}
+                      </p>
+                    </div>
+
+                    {/* Medicines List with Rural Dosage Guide */}
+                    <div className="space-y-2">
+                      <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Prescribed Medicines (दवाइयां):
+                      </div>
+                      <div className="space-y-1.5">
+                        {rx.medicines.map((med, idx) => (
+                          <div key={idx} className="p-2.5 rounded-lg bg-teal-50/50 border border-teal-100 flex items-center justify-between text-xs">
+                            <div className="space-y-0.5">
+                              <span className="font-bold text-teal-950 block">{med.name}</span>
+                              <span className="text-[11px] text-teal-700">{med.frequency} • {med.duration}</span>
+                              {med.instructions && (
+                                <span className="text-[10px] text-slate-500 block italic">{med.instructions}</span>
+                              )}
+                            </div>
+                            <span className="px-2 py-0.5 rounded bg-white text-teal-800 font-bold border border-teal-200 text-[11px]">
+                              {med.dosage}
+                            </span>
+                          </div>
                         ))}
                       </div>
                     </div>
-                  )}
 
-                  {rx.notes && (
-                    <p className="text-[11px] text-slate-500 bg-amber-50 p-2 rounded-lg border border-amber-200 text-amber-900">
-                      💡 <strong>Doctor Note:</strong> {rx.notes}
-                    </p>
-                  )}
+                    {/* Investigations / Tests */}
+                    {rx.investigations && rx.investigations.length > 0 && (
+                      <div className="space-y-1 pt-1">
+                        <div className="text-[11px] font-bold text-slate-500">Ordered Diagnostic Tests:</div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {rx.investigations.map((inv, i) => (
+                            <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium">
+                              {inv}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {rx.notes && (
+                      <p className="text-[11px] text-slate-500 bg-amber-50 p-2 rounded-lg border border-amber-200 text-amber-900">
+                        💡 <strong>Doctor Note:</strong> {rx.notes}
+                      </p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -573,73 +780,96 @@ export const FamilyHealthSection: React.FC = () => {
             <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-3">
               <span className="material-symbols-outlined text-4xl text-slate-400">lab_profile</span>
               <p className="text-sm font-bold text-slate-700">No diagnostic reports stored yet</p>
-              <p className="text-xs text-slate-500">Add lab test results, ECG, or X-Ray reports for quick family access.</p>
+              <p className="text-xs text-slate-500">Take a photo of your test paper or report slip to analyze and store.</p>
               <button
                 type="button"
                 onClick={() => setShowAddReportModal(true)}
                 className="px-4 py-2 rounded-xl bg-teal-700 text-white text-xs font-bold shadow-sm"
               >
-                + Add Lab Report
+                📸 Scan / Add Lab Report
               </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {selectedMember?.labReports.map((rep) => (
-                <div key={rep.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4 hover:border-teal-300 transition">
-                  <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                          {rep.date}
-                        </span>
-                        <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
-                          rep.summaryStatus === 'CRITICAL'
-                            ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                            : rep.summaryStatus === 'ATTENTION'
-                            ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                            : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                        }`}>
-                          {rep.summaryStatus === 'CRITICAL' ? '🔴 Critical' : rep.summaryStatus === 'ATTENTION' ? '🟡 Attention Needed' : '🟢 Normal Range'}
-                        </span>
-                      </div>
-                      <h3 className="text-sm font-bold text-slate-900 mt-1">{rep.testName}</h3>
-                      <p className="text-xs text-slate-500">{rep.facilityName}</p>
-                    </div>
-                    <span className="material-symbols-outlined text-teal-700 text-2xl">
-                      {rep.category === 'CARDIAC' ? 'monitor_heart' : rep.category === 'IMAGING' ? 'radiology' : 'science'}
-                    </span>
-                  </div>
-
-                  {/* Key Test Values Table with Rural Explanations */}
-                  <div className="space-y-1.5">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Observed Values (जांच के परिणाम):
-                    </div>
-                    <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-xs">
-                      {rep.keyValues.map((kv, i) => (
-                        <div key={i} className={`p-2.5 flex items-center justify-between ${kv.isAbnormal ? 'bg-amber-50/70' : 'bg-white'}`}>
-                          <div className="space-y-0.5">
-                            <span className="font-semibold text-slate-800 block">{kv.parameter}</span>
-                            <span className="text-[10px] text-slate-400">Normal: {kv.normalRange}</span>
-                          </div>
-                          <div className="text-right">
-                            <span className={`font-mono font-bold text-xs ${kv.isAbnormal ? 'text-amber-800' : 'text-slate-800'}`}>
-                              {kv.value}
-                            </span>
-                            {kv.isAbnormal && (
-                              <span className="block text-[10px] text-rose-600 font-bold">Outside Range</span>
-                            )}
-                          </div>
+                <div key={rep.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4 hover:border-teal-300 transition flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                            {rep.date}
+                          </span>
+                          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                            rep.summaryStatus === 'CRITICAL'
+                              ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                              : rep.summaryStatus === 'ATTENTION'
+                              ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                              : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          }`}>
+                            {rep.summaryStatus === 'CRITICAL' ? '🔴 Critical' : rep.summaryStatus === 'ATTENTION' ? '🟡 Attention Needed' : '🟢 Normal Range'}
+                          </span>
+                          {rep.imageUrl && (
+                            <button
+                              type="button"
+                              onClick={() => setLightboxImageUrl(rep.imageUrl || null)}
+                              className="inline-flex items-center gap-1 text-[10px] font-bold text-teal-700 bg-white border border-teal-200 px-2 py-0.5 rounded hover:bg-teal-50 cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-xs">image</span>
+                              View Photo (फोटो देखें)
+                            </button>
+                          )}
                         </div>
-                      ))}
+                        <h3 className="text-sm font-bold text-slate-900 mt-1">{rep.testName}</h3>
+                        <p className="text-xs text-slate-500">{rep.facilityName}</p>
+                        {rep.contactNumber && (
+                          <div className="pt-0.5">
+                            <a
+                              href={`tel:${rep.contactNumber}`}
+                              className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 bg-teal-50/70 hover:bg-teal-100 px-2 py-0.5 rounded border border-teal-200 transition"
+                            >
+                              <span className="material-symbols-outlined text-xs text-teal-700">call</span>
+                              Call Lab: {rep.contactNumber}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                      <span className="material-symbols-outlined text-teal-700 text-2xl">
+                        {rep.category === 'CARDIAC' ? 'monitor_heart' : rep.category === 'IMAGING' ? 'radiology' : 'science'}
+                      </span>
                     </div>
-                  </div>
 
-                  {rep.doctorRemarks && (
-                    <p className="text-[11px] text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                      📋 <strong>Doctor Remarks:</strong> {rep.doctorRemarks}
-                    </p>
-                  )}
+                    {/* Key Test Values Table with Rural Explanations */}
+                    <div className="space-y-1.5">
+                      <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Observed Values (जांच के परिणाम):
+                      </div>
+                      <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-xs">
+                        {rep.keyValues.map((kv, i) => (
+                          <div key={i} className={`p-2.5 flex items-center justify-between ${kv.isAbnormal ? 'bg-amber-50/70' : 'bg-white'}`}>
+                            <div className="space-y-0.5">
+                              <span className="font-semibold text-slate-800 block">{kv.parameter}</span>
+                              <span className="text-[10px] text-slate-400">Normal: {kv.normalRange}</span>
+                            </div>
+                            <div className="text-right">
+                              <span className={`font-mono font-bold text-xs ${kv.isAbnormal ? 'text-amber-800' : 'text-slate-800'}`}>
+                                {kv.value}
+                              </span>
+                              {kv.isAbnormal && (
+                                <span className="block text-[10px] text-rose-600 font-bold">Outside Range</span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {rep.doctorRemarks && (
+                      <p className="text-[11px] text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                        📋 <strong>Doctor Remarks:</strong> {rep.doctorRemarks}
+                      </p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -733,7 +963,9 @@ export const FamilyHealthSection: React.FC = () => {
         </div>
       )}
 
-      {/* Modal 1: Add Family Member */}
+      {/* ========================================================= */}
+      {/* Modal 1: Add Family Member (With Strictly Non-Negative Age) */}
+      {/* ========================================================= */}
       {showAddMemberModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
@@ -780,13 +1012,32 @@ export const FamilyHealthSection: React.FC = () => {
                     <option value="Other">Other (अन्य)</option>
                   </select>
                 </div>
+
+                {/* Non-Negative Age Field with Strict Bounds */}
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Age (उम्र)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Age (उम्र - Positive Only) *</label>
                   <input
                     type="number"
-                    placeholder="e.g. 42"
+                    min="0"
+                    max="125"
+                    step="1"
+                    required
+                    placeholder="e.g. 35"
                     value={newMemberForm.age}
-                    onChange={(e) => setNewMemberForm({ ...newMemberForm, age: e.target.value })}
+                    onKeyDown={(e) => {
+                      if (e.key === '-' || e.key === '+' || e.key === 'e') {
+                        e.preventDefault();
+                      }
+                    }}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '') {
+                        setNewMemberForm({ ...newMemberForm, age: '' });
+                      } else {
+                        const clamped = Math.max(0, Math.min(125, parseInt(val, 10) || 0));
+                        setNewMemberForm({ ...newMemberForm, age: String(clamped) });
+                      }
+                    }}
                     className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
                   />
                 </div>
@@ -815,6 +1066,17 @@ export const FamilyHealthSection: React.FC = () => {
                     className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Contact Phone Number (मोबाइल नंबर)</label>
+                <input
+                  type="tel"
+                  placeholder="e.g. +91 98765 43210"
+                  value={newMemberForm.contactNumber}
+                  onChange={(e) => setNewMemberForm({ ...newMemberForm, contactNumber: e.target.value })}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
+                />
               </div>
 
               <div>
@@ -848,14 +1110,16 @@ export const FamilyHealthSection: React.FC = () => {
         </div>
       )}
 
-      {/* Modal 2: Add Prescription Slip */}
+      {/* ========================================================================= */}
+      {/* Modal 2: Add / Scan Prescription Slip (Photo OCR + Fully Editable Fields) */}
+      {/* ========================================================================= */}
       {showAddRxModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-6 space-y-4 my-8">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <span className="material-symbols-outlined text-teal-700">receipt_long</span>
-                Add Doctor Prescription (पर्ची जोड़ें)
+                <span className="material-symbols-outlined text-teal-700">document_scanner</span>
+                Prescription Slip Scanner & Entry (दवाई पर्ची स्कैनर)
               </h3>
               <button
                 type="button"
@@ -866,77 +1130,231 @@ export const FamilyHealthSection: React.FC = () => {
               </button>
             </div>
 
+            {/* Photo Capture & AI OCR Scanner Box */}
+            <div className="p-4 rounded-2xl bg-teal-50/70 border-2 border-dashed border-teal-300 space-y-3">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-teal-700 text-white flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-2xl">photo_camera</span>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-teal-950">Take a Photo of the Prescription Slip</h4>
+                    <p className="text-[11px] text-teal-700">Gemini Vision AI automatically extracts Doctor, Clinic & Medicines</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={rxFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleScanPrescriptionPhoto}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => rxFileInputRef.current?.click()}
+                    disabled={isAnalyzingRx}
+                    className="px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5 transition active:scale-95"
+                  >
+                    <span className="material-symbols-outlined text-base">
+                      {isAnalyzingRx ? 'sync' : 'add_a_photo'}
+                    </span>
+                    <span>{isAnalyzingRx ? 'Analyzing Photo...' : 'Snap / Upload Photo'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Progress or Success Indicator */}
+              {isAnalyzingRx && (
+                <div className="p-2.5 rounded-xl bg-white border border-teal-200 flex items-center gap-2.5 text-xs text-teal-800 font-semibold animate-pulse">
+                  <span className="material-symbols-outlined text-base animate-spin text-teal-700">progress_activity</span>
+                  Analyzing prescription with Gemini Multimodal Vision... reading handwriting...
+                </div>
+              )}
+
+              {rxOcrSuccess && (
+                <div className="p-2.5 rounded-xl bg-emerald-100/80 border border-emerald-300 flex items-center gap-2 text-xs text-emerald-900 font-bold">
+                  <span className="material-symbols-outlined text-base text-emerald-700">check_circle</span>
+                  ✓ AI extracted Doctor, Clinic, & Medicines! You can edit any details below before saving.
+                </div>
+              )}
+
+              {rxImagePreview && (
+                <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-teal-100">
+                  <img src={rxImagePreview} alt="Slip Preview" className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
+                  <div className="text-[11px] text-slate-600">
+                    <span className="font-bold text-slate-800 block">Prescription Image Attached</span>
+                    <span>This photo will be saved in your family records.</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <form onSubmit={handleCreatePrescription} className="space-y-3.5 text-xs">
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Doctor Name (डॉक्टर का नाम) *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Dr. Deshmukh (Civil Hospital)"
-                  value={newRxForm.doctorName}
-                  onChange={(e) => setNewRxForm({ ...newRxForm, doctorName: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
-                />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Hospital / Clinic (अस्पताल)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Achalpur Sub-District Hospital"
-                  value={newRxForm.facilityName}
-                  onChange={(e) => setNewRxForm({ ...newRxForm, facilityName: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
-                />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Diagnosis (रोग विवरण)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Seasonal Cough & Fever"
-                  value={newRxForm.diagnosis}
-                  onChange={(e) => setNewRxForm({ ...newRxForm, diagnosis: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Medicine Name (दवाई)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Doctor Name (डॉक्टर का नाम) *</label>
                   <input
                     type="text"
-                    placeholder="e.g. Tab. Paracetamol 650mg"
-                    value={newRxForm.medName}
-                    onChange={(e) => setNewRxForm({ ...newRxForm, medName: e.target.value })}
+                    required
+                    placeholder="e.g. Dr. S. K. Deshmukh"
+                    value={newRxForm.doctorName}
+                    onChange={(e) => setNewRxForm({ ...newRxForm, doctorName: e.target.value })}
                     className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Frequency (खुराक)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Clinic / Hospital (अस्पताल या क्लीनिक)</label>
                   <input
                     type="text"
-                    placeholder="e.g. 1-0-1 (सुबह-रात)"
-                    value={newRxForm.frequency}
-                    onChange={(e) => setNewRxForm({ ...newRxForm, frequency: e.target.value })}
+                    placeholder="e.g. Civil Hospital Amravati"
+                    value={newRxForm.facilityName}
+                    onChange={(e) => setNewRxForm({ ...newRxForm, facilityName: e.target.value })}
                     className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Contact Phone Number (डॉक्टर / अस्पताल संपर्क)</label>
+                  <input
+                    type="tel"
+                    placeholder="e.g. +91 721 266 2300"
+                    value={newRxForm.contactNumber}
+                    onChange={(e) => setNewRxForm({ ...newRxForm, contactNumber: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Diagnosis (रोग / स्थिति)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. High BP & Diabetes Follow-up"
+                    value={newRxForm.diagnosis}
+                    onChange={(e) => setNewRxForm({ ...newRxForm, diagnosis: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
+                  />
+                </div>
+              </div>
+
+              {/* Editable Medicines List */}
+              <div className="space-y-2 pt-1 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-slate-700 uppercase tracking-wider text-[11px]">
+                    Prescribed Medicines (पहचानी गई दवाइयां - संपादित करें)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddMedicineRow}
+                    className="text-teal-700 hover:text-teal-900 font-bold text-xs flex items-center gap-1 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-sm">add_circle</span>
+                    + Add Medicine (दवाई जोड़ें)
+                  </button>
+                </div>
+
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {rxMedicinesList.map((med, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                      <div className="grid grid-cols-12 gap-2 items-center">
+                        <div className="col-span-6">
+                          <input
+                            type="text"
+                            placeholder="Medicine Name (e.g. Tab. Telmisartan)"
+                            value={med.name}
+                            onChange={(e) => handleUpdateMedicineRow(idx, 'name', e.target.value)}
+                            className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                          />
+                        </div>
+                        <div className="col-span-3">
+                          <input
+                            type="text"
+                            placeholder="Dosage (40mg)"
+                            value={med.dosage}
+                            onChange={(e) => handleUpdateMedicineRow(idx, 'dosage', e.target.value)}
+                            className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                          />
+                        </div>
+                        <div className="col-span-3 flex items-center gap-1">
+                          <input
+                            type="text"
+                            placeholder="Duration (30 Days)"
+                            value={med.duration}
+                            onChange={(e) => handleUpdateMedicineRow(idx, 'duration', e.target.value)}
+                            className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                          />
+                          {rxMedicinesList.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMedicineRow(idx)}
+                              className="text-rose-500 hover:text-rose-700 p-1"
+                              title="Delete row"
+                            >
+                              <span className="material-symbols-outlined text-base">delete</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          placeholder="Frequency (e.g. 1-0-1 सुबह-रात)"
+                          value={med.frequency}
+                          onChange={(e) => handleUpdateMedicineRow(idx, 'frequency', e.target.value)}
+                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Instructions (e.g. After breakfast with warm water)"
+                          value={med.instructions || ''}
+                          onChange={(e) => handleUpdateMedicineRow(idx, 'instructions', e.target.value)}
+                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Ordered Diagnostic Tests (जांच के आदेश)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Fasting Sugar, ECG, Lipid Profile"
+                  value={newRxForm.investigations}
+                  onChange={(e) => setNewRxForm({ ...newRxForm, investigations: e.target.value })}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Doctor Remarks / Dietary Advice</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Avoid salt and fried food, walk daily"
+                  value={newRxForm.notes}
+                  onChange={(e) => setNewRxForm({ ...newRxForm, notes: e.target.value })}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
+                />
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowAddRxModal(false)}
-                  className="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold"
+                  className="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm"
+                  className="px-5 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm cursor-pointer active:scale-95 transition"
                 >
-                  Save Slip (पर्ची सुरक्षित करें)
+                  Save Prescription (पर्ची सुरक्षित करें)
                 </button>
               </div>
             </form>
@@ -944,14 +1362,16 @@ export const FamilyHealthSection: React.FC = () => {
         </div>
       )}
 
-      {/* Modal 3: Add Lab Report */}
+      {/* ========================================================================= */}
+      {/* Modal 3: Add / Scan Lab Report (Photo OCR + Fully Editable Fields) */}
+      {/* ========================================================================= */}
       {showAddReportModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-6 space-y-4 my-8">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700">science</span>
-                Add Diagnostic Report (जांच रिपोर्ट जोड़ें)
+                Diagnostic Lab Report Scanner & Entry (जांच रिपोर्ट स्कैनर)
               </h3>
               <button
                 type="button"
@@ -962,26 +1382,99 @@ export const FamilyHealthSection: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleCreateReport} className="space-y-3.5 text-xs">
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Test Name (जांच का नाम) *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Complete Blood Count (CBC) or Fasting Blood Sugar"
-                  value={newReportForm.testName}
-                  onChange={(e) => setNewReportForm({ ...newReportForm, testName: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
-                />
+            {/* Photo Capture & AI OCR Scanner Box for Lab Reports */}
+            <div className="p-4 rounded-2xl bg-teal-50/70 border-2 border-dashed border-teal-300 space-y-3">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-teal-700 text-white flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-2xl">document_scanner</span>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-teal-950">Snap a Photo of the Lab / Test Report</h4>
+                    <p className="text-[11px] text-teal-700">Gemini Vision AI extracts parameters, values, and normal ranges</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={reportFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleScanReportPhoto}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => reportFileInputRef.current?.click()}
+                    disabled={isAnalyzingReport}
+                    className="px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5 transition active:scale-95"
+                  >
+                    <span className="material-symbols-outlined text-base">
+                      {isAnalyzingReport ? 'sync' : 'add_a_photo'}
+                    </span>
+                    <span>{isAnalyzingReport ? 'Reading Report...' : 'Snap / Upload Report'}</span>
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              {isAnalyzingReport && (
+                <div className="p-2.5 rounded-xl bg-white border border-teal-200 flex items-center gap-2.5 text-xs text-teal-800 font-semibold animate-pulse">
+                  <span className="material-symbols-outlined text-base animate-spin text-teal-700">progress_activity</span>
+                  Analyzing report with Gemini Vision OCR... reading lab values...
+                </div>
+              )}
+
+              {reportOcrSuccess && (
+                <div className="p-2.5 rounded-xl bg-emerald-100/80 border border-emerald-300 flex items-center gap-2 text-xs text-emerald-900 font-bold">
+                  <span className="material-symbols-outlined text-base text-emerald-700">check_circle</span>
+                  ✓ AI extracted test parameters and findings! You can review or edit below.
+                </div>
+              )}
+
+              {reportImagePreview && (
+                <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-teal-100">
+                  <img src={reportImagePreview} alt="Report Preview" className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
+                  <div className="text-[11px] text-slate-600">
+                    <span className="font-bold text-slate-800 block">Report Document Attached</span>
+                    <span>This photo will be saved in your family records.</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={handleCreateReport} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Test Name (जांच का नाम) *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Complete Blood Count (CBC)"
+                    value={newReportForm.testName}
+                    onChange={(e) => setNewReportForm({ ...newReportForm, testName: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Lab / Diagnostic Center (प्रयोगशाला)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Civil Hospital Pathology Lab"
+                    value={newReportForm.facilityName}
+                    onChange={(e) => setNewReportForm({ ...newReportForm, facilityName: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="font-bold text-slate-700 block mb-1">Category (प्रकार)</label>
                   <select
                     value={newReportForm.category}
                     onChange={(e) => setNewReportForm({ ...newReportForm, category: e.target.value as any })}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
                   >
                     <option value="BLOOD">Blood Test (रक्त जांच)</option>
                     <option value="CARDIAC">Cardiac ECG (ईसीजी)</option>
@@ -991,60 +1484,107 @@ export const FamilyHealthSection: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Status (परिणाम)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Result Status (स्थिति)</label>
                   <select
                     value={newReportForm.summaryStatus}
                     onChange={(e) => setNewReportForm({ ...newReportForm, summaryStatus: e.target.value as any })}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
                   >
                     <option value="NORMAL">🟢 Normal (सामान्य)</option>
                     <option value="ATTENTION">🟡 Attention Needed (ध्यान दें)</option>
                     <option value="CRITICAL">🔴 Critical (गंभीर)</option>
                   </select>
                 </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Lab Contact Number</label>
+                  <input
+                    type="tel"
+                    placeholder="e.g. +91 721 266 2304"
+                    value={newReportForm.contactNumber}
+                    onChange={(e) => setNewReportForm({ ...newReportForm, contactNumber: e.target.value })}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
+                  />
+                </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Parameter</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Hemoglobin"
-                    value={newReportForm.paramName}
-                    onChange={(e) => setNewReportForm({ ...newReportForm, paramName: e.target.value })}
-                    className="w-full p-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
-                  />
+              {/* Editable Test Parameters List */}
+              <div className="space-y-2 pt-1 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-slate-700 uppercase tracking-wider text-[11px]">
+                    Test Parameters & Observed Values (पैरामीटर और परिणाम)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddParameterRow}
+                    className="text-teal-700 hover:text-teal-900 font-bold text-xs flex items-center gap-1 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-sm">add_circle</span>
+                    + Add Parameter (पैरामीटर जोड़ें)
+                  </button>
                 </div>
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Observed Value</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 9.8 g/dL"
-                    value={newReportForm.paramValue}
-                    onChange={(e) => setNewReportForm({ ...newReportForm, paramValue: e.target.value })}
-                    className="w-full p-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
-                  />
-                </div>
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Normal Range</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 12-15"
-                    value={newReportForm.paramRange}
-                    onChange={(e) => setNewReportForm({ ...newReportForm, paramRange: e.target.value })}
-                    className="w-full p-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
-                  />
+
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {reportKeyValuesList.map((param, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-12 gap-2 items-center">
+                      <div className="col-span-4">
+                        <input
+                          type="text"
+                          placeholder="Parameter (e.g. Hemoglobin)"
+                          value={param.parameter}
+                          onChange={(e) => handleUpdateParameterRow(idx, 'parameter', e.target.value)}
+                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                        />
+                      </div>
+                      <div className="col-span-3">
+                        <input
+                          type="text"
+                          placeholder="Value (e.g. 11.2 g/dL)"
+                          value={param.value}
+                          onChange={(e) => handleUpdateParameterRow(idx, 'value', e.target.value)}
+                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                        />
+                      </div>
+                      <div className="col-span-3">
+                        <input
+                          type="text"
+                          placeholder="Normal (12 - 15)"
+                          value={param.normalRange}
+                          onChange={(e) => handleUpdateParameterRow(idx, 'normalRange', e.target.value)}
+                          className="w-full p-1.5 rounded-lg border border-slate-200 bg-white text-xs text-slate-800"
+                        />
+                      </div>
+                      <div className="col-span-2 flex items-center justify-end gap-1">
+                        <label className="flex items-center gap-1 text-[10px] text-rose-700 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={param.isAbnormal || false}
+                            onChange={(e) => handleUpdateParameterRow(idx, 'isAbnormal', e.target.checked)}
+                          />
+                          High/Low
+                        </label>
+                        {reportKeyValuesList.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveParameterRow(idx)}
+                            className="text-rose-500 hover:text-rose-700 p-1"
+                          >
+                            <span className="material-symbols-outlined text-base">delete</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Doctor Remarks (टिप्पणी)</label>
+                <label className="font-bold text-slate-700 block mb-1">Doctor Remarks (डॉक्टर की टिप्पणी)</label>
                 <input
                   type="text"
-                  placeholder="e.g. Take iron tablets, repeat test in 30 days"
+                  placeholder="e.g. Normal findings, repeat test in 30 days"
                   value={newReportForm.doctorRemarks}
                   onChange={(e) => setNewReportForm({ ...newReportForm, doctorRemarks: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
                 />
               </div>
 
@@ -1052,13 +1592,13 @@ export const FamilyHealthSection: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddReportModal(false)}
-                  className="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold"
+                  className="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm"
+                  className="px-5 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm cursor-pointer active:scale-95 transition"
                 >
                   Save Report (रिपोर्ट सुरक्षित करें)
                 </button>
@@ -1150,13 +1690,13 @@ export const FamilyHealthSection: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddCheckupModal(false)}
-                  className="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold"
+                  className="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm"
+                  className="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm cursor-pointer"
                 >
                   Schedule (तय करें)
                 </button>
@@ -1241,6 +1781,27 @@ export const FamilyHealthSection: React.FC = () => {
                 <span className="material-symbols-outlined text-base">print</span>
                 Print Health Slip (प्रिंट करें)
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Image Preview Modal */}
+      {lightboxImageUrl && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="max-w-2xl w-full bg-slate-900 rounded-3xl p-4 space-y-3 border border-slate-700">
+            <div className="flex items-center justify-between text-white pb-2 border-b border-slate-800">
+              <span className="text-xs font-bold">Original Medical Document / Slip Photo</span>
+              <button
+                type="button"
+                onClick={() => setLightboxImageUrl(null)}
+                className="text-slate-400 hover:text-white"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="max-h-[70vh] overflow-auto flex items-center justify-center bg-black/50 rounded-2xl p-2">
+              <img src={lightboxImageUrl} alt="Full Resolution" className="max-w-full max-h-[65vh] object-contain rounded-xl" />
             </div>
           </div>
         </div>

@@ -82,6 +82,7 @@ export interface PrescriptionSlip {
   date: string;
   doctorName: string;
   facilityName: string;
+  contactNumber?: string;
   diagnosis: string;
   medicines: PrescriptionMedicine[];
   investigations: string[];
@@ -103,6 +104,7 @@ export interface LabReport {
   testName: string;
   category: 'BLOOD' | 'IMAGING' | 'CARDIAC' | 'URINE' | 'OTHER';
   facilityName: string;
+  contactNumber?: string;
   summaryStatus: 'NORMAL' | 'ATTENTION' | 'CRITICAL';
   keyValues: LabParameter[];
   imageUrl?: string;
@@ -128,6 +130,7 @@ export interface FamilyMember {
   bloodGroup: string;
   abhaId: string;
   village: string;
+  contactNumber?: string;
   chronicConditions: string[];
   prescriptions: PrescriptionSlip[];
   labReports: LabReport[];
