@@ -1,21 +1,55 @@
 import { useState, useEffect } from 'react';
-import { Header } from './components/Header';
-import { Sidebar } from './components/Sidebar';
-import { BottomNavBar } from './components/BottomNavBar';
-import { FamilyHealthSection } from './components/FamilyHealthSection';
-import { VoiceTriageSection } from './components/VoiceTriageSection';
-import { DynamicMapSection } from './components/DynamicMapSection';
-import { CasualtySection } from './components/CasualtySection';
-import { DhoHeatmapSection } from './components/DhoHeatmapSection';
+import { LandingPage } from './components/LandingPage';
+import { AuthModal, type UserProfile } from './components/AuthModal';
+import { PatientDashboard } from './components/PatientDashboard';
+import { StaffDashboard } from './components/StaffDashboard';
 import { fetchFacilities, fetchReferrals, createReferral } from './services/api';
 import type { Facility, Referral } from './types';
 
+const DEFAULT_PATIENT_USER: UserProfile = {
+  id: 'fam-ramesh',
+  name: 'Ramesh Patil (रमेश पाटिल)',
+  role: 'patient',
+  title: 'Family Head & Patient',
+  subTitle: 'Hypertension & Diabetes Care',
+  avatar: 'RP',
+  idNumber: 'ABHA: 91-4432-8871-0921',
+  location: 'Semadoh Village, Melghat'
+};
+
+const DEFAULT_STAFF_USER: UserProfile = {
+  id: 'staff-asha-sunita',
+  name: 'Sunita Devi (सुनीता देवी)',
+  role: 'staff',
+  title: 'Lead Frontline ASHA Facilitator',
+  subTitle: 'Melghat Tribal Block Health Sub-Center',
+  avatar: 'SD',
+  idNumber: 'ASHA ID: MH-AMR-7702',
+  location: 'Semadoh Sub-Center'
+};
+
 export function App() {
-  const [activeTab, setActiveTab] = useState('family');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<'landing' | 'patient' | 'staff'>('landing');
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authRole, setAuthRole] = useState<'patient' | 'staff'>('patient');
+
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [referrals, setReferrals] = useState<Referral[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
+
+  // Check saved session in localStorage
+  useEffect(() => {
+    try {
+      const savedUser = localStorage.getItem('ilaaj_user');
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser) as UserProfile;
+        if (parsed && parsed.role) {
+          setCurrentUser(parsed);
+        }
+      }
+    } catch {}
+  }, []);
 
   const loadData = async () => {
     try {
@@ -30,6 +64,30 @@ export function App() {
   useEffect(() => {
     loadData();
   }, []);
+
+  const handleLogin = (user: UserProfile) => {
+    setCurrentUser(user);
+    try {
+      localStorage.setItem('ilaaj_user', JSON.stringify(user));
+    } catch {}
+    setShowAuthModal(false);
+    setCurrentView(user.role);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleQuickEnter = (role: 'patient' | 'staff') => {
+    const user = role === 'patient' ? DEFAULT_PATIENT_USER : DEFAULT_STAFF_USER;
+    handleLogin(user);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    try {
+      localStorage.removeItem('ilaaj_user');
+    } catch {}
+    setCurrentView('landing');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleReferralCreated = async (newRefData: any) => {
     try {
@@ -51,82 +109,56 @@ export function App() {
       };
       setReferrals(prev => [fallbackRef, ...prev]);
     }
-    // Auto-switch to Care & Transit Reroute Map
-    setActiveTab('map');
   };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
-      {/* Fixed Top Header */}
-      <Header
-        activeTab={activeTab}
-        mobileMenuOpen={mobileMenuOpen}
-        onToggleMobileMenu={() => setMobileMenuOpen(prev => !prev)}
+      
+      {/* 1. Landing Page View with Official Hero Logo & Dual Gateway */}
+      {currentView === 'landing' && (
+        <LandingPage
+          onOpenAuth={(role) => {
+            setAuthRole(role);
+            setShowAuthModal(true);
+          }}
+          onQuickEnter={handleQuickEnter}
+        />
+      )}
+
+      {/* 2. Patient & Family Dashboard (नागरिक व परिवार पोर्टल) */}
+      {currentView === 'patient' && (
+        <PatientDashboard
+          user={currentUser || DEFAULT_PATIENT_USER}
+          onSwitchToStaff={() => {
+            handleLogin(DEFAULT_STAFF_USER);
+          }}
+          onLogout={handleLogout}
+        />
+      )}
+
+      {/* 3. Frontline ASHA & Medical Staff Dashboard (चिकित्सा कर्मी पोर्टल) */}
+      {currentView === 'staff' && (
+        <StaffDashboard
+          user={currentUser || DEFAULT_STAFF_USER}
+          facilities={facilities}
+          referrals={referrals}
+          onRefreshData={loadData}
+          onReferralCreated={handleReferralCreated}
+          onSwitchToPatient={() => {
+            handleLogin(DEFAULT_PATIENT_USER);
+          }}
+          onLogout={handleLogout}
+        />
+      )}
+
+      {/* Role-Based Authentication & Instant Demo Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onLogin={handleLogin}
+        defaultRole={authRole}
       />
 
-      {/* Fixed Left Sidebar Navigation (Desktop) & Slide-Over Drawer (Mobile/Tablet) */}
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        mobileMenuOpen={mobileMenuOpen}
-        onCloseMobileMenu={() => setMobileMenuOpen(false)}
-      />
-
-      {/* Main Content Area - Fluid responsive padding for phones, tablets & desktop */}
-      <div className="lg:pl-64 pt-16 pb-20 lg:pb-8 w-full min-h-screen overflow-x-hidden">
-        <main className="w-full p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-5 sm:space-y-6">
-          {loading ? (
-            <div className="flex items-center justify-center h-64 text-slate-500 text-sm font-medium">
-              <span className="material-symbols-outlined text-2xl text-teal-700 animate-spin mr-2">
-                progress_activity
-              </span>
-              Loading Ilaaj Track Clinical Portal...
-            </div>
-          ) : (
-            <div>
-              {activeTab === 'family' && (
-                <FamilyHealthSection />
-              )}
-
-              {activeTab === 'triage' && (
-                <VoiceTriageSection onReferralCreated={handleReferralCreated} />
-              )}
-
-              {activeTab === 'map' && (
-                <DynamicMapSection
-                  facilities={facilities}
-                  referrals={referrals}
-                  onRefresh={loadData}
-                />
-              )}
-
-              {activeTab === 'hospital' && (
-                <CasualtySection
-                  referrals={referrals}
-                  onRefresh={loadData}
-                />
-              )}
-
-              {activeTab === 'telemetry' && (
-                <DhoHeatmapSection facilities={facilities} />
-              )}
-            </div>
-          )}
-
-          {/* Simple Institutional Footer */}
-          <footer className="pt-6 pb-8 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p>
-              <strong>Ilaaj Track (ईलाज ट्रैक)</strong> • Rural Healthcare Closed-Loop Referral & Care Continuity Platform
-            </p>
-            <p className="text-[11px] text-slate-400">
-              Guiding Principle: "Verify care readiness before travel, track the journey until home care is complete."
-            </p>
-          </footer>
-        </main>
-      </div>
-
-      {/* Persistent Mobile & Tablet Thumb-Friendly Bottom Navigation Bar */}
-      <BottomNavBar activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }
