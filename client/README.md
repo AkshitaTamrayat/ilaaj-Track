@@ -3,8 +3,7 @@
 > **React 18 + Vite 8 + TypeScript + Tailwind CSS v4**  
 > *Daylight-First Responsive Healthcare Interface for Rural Communities, Frontline ASHA Workers & Clinicians*
 
-* **Live Frontend:** [https://ijt-ai.antideploy.app](https://ijt-ai.antideploy.app)
-* **Live Backend API:** [https://ilaaj-track.onrender.com](https://ilaaj-track.onrender.com)
+* **Live Web App:** [https://ijt-ai.antideploy.app](https://ijt-ai.antideploy.app)
 
 ## Key Components
 

@@ -7,24 +7,16 @@
 > *भारत का पहला एआई क्लोज्ड-लूप रेफरल व केयर नेटवर्क — अस्पताल पहुंचने से पहले बेड, डॉक्टर व जांच की पुष्टि*
 
 <p align="center">
-  <a href="https://ijt-ai.antideploy.app"><img src="https://img.shields.io/badge/Live%20Frontend-ijt--ai.antideploy.app-0f766e?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Live Frontend" /></a>
-  <a href="https://ilaaj-track.onrender.com/api/health"><img src="https://img.shields.io/badge/Live%20Backend-ilaaj--track.onrender.com-0d9488?style=for-the-badge&logo=render&logoColor=white" alt="Live Backend API" /></a>
+  <a href="https://ijt-ai.antideploy.app"><img src="https://img.shields.io/badge/Live%20Platform-ijt--ai.antideploy.app-0f766e?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Live Platform" /></a>
   <a href="https://github.com/AkshitaTamrayat/ilaaj-Track"><img src="https://img.shields.io/badge/GitHub-Repository-1e293b?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repo" /></a>
   <a href="https://github.com/AkshitaTamrayat/ilaaj-Track/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License" /></a>
 </p>
 
 ---
 
-## 🌐 Verified Live Deployment Links
+## 🌐 Live Platform Link
 
-| Service | Platform | Live URL | Status |
-| :--- | :--- | :--- | :---: |
-| **Frontend Web App** | Antideploy (Cloudflare Edge & Fly.io) | [https://ijt-ai.antideploy.app](https://ijt-ai.antideploy.app) | `HTTP 200 OK` |
-| **Backend API Engine** | Render Web Service | [https://ilaaj-track.onrender.com](https://ilaaj-track.onrender.com) | `HTTP 200 OK` |
-| **API Health Check** | Render REST API | [https://ilaaj-track.onrender.com/api/health](https://ilaaj-track.onrender.com/api/health) | `Active` |
-| **Family Locker API** | Render REST API | [https://ilaaj-track.onrender.com/api/family-members](https://ilaaj-track.onrender.com/api/family-members) | `Active` |
-| **Facilities Directory**| Render REST API | [https://ilaaj-track.onrender.com/api/facilities](https://ilaaj-track.onrender.com/api/facilities) | `Active` |
-| **Referrals Queue** | Render REST API | [https://ilaaj-track.onrender.com/api/referrals](https://ilaaj-track.onrender.com/api/referrals) | `Active` |
+* **Official Web Application:** [https://ijt-ai.antideploy.app](https://ijt-ai.antideploy.app)
 
 ---
 
@@ -124,8 +116,8 @@ In public healthcare networks across rural India (Sub-Centers $\rightarrow$ Prim
 | **Speech-to-Text AI** | Groq Whisper Large v3 Turbo (Sub-second Indic Vernacular STT) |
 | **Spatial Engine** | Haversine Formula Matrix for Real-time Hospital Geo-Routing |
 | **Security & Middleware**| Express Security Headers, Rate Limiting, 10MB Multer DoS Guard |
-| **Frontend Hosting** | Antideploy (Cloudflare Global Edge CDN + Fly.io) |
-| **Backend Hosting** | Render Cloud Web Services (`https://ilaaj-track.onrender.com`) |
+| **Hosting & CDN** | Antideploy (Cloudflare Global Edge CDN + Fly.io) |
+| **Backend Infrastructure** | Render Cloud Web Services |
 
 ---
 
