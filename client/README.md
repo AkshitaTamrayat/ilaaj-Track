@@ -1,32 +1,25 @@
-# React + TypeScript + Vite
+# 🏥 Ilaaj Track Frontend (इलाज ट्रैक)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> **React 18 + Vite 8 + TypeScript + Tailwind CSS v4**  
+> *Daylight-First Responsive Healthcare Interface for Rural Communities, Frontline ASHA Workers & Clinicians*
 
-Currently, two official plugins are available:
+* **Live Frontend:** [https://ijt-ai.antideploy.app](https://ijt-ai.antideploy.app)
+* **Live Backend API:** [https://ilaaj-track.onrender.com](https://ilaaj-track.onrender.com)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Key Components
 
-## React Compiler
+* `src/components/LandingPage.tsx`: High-converting healthcare landing page with official emblem hero showcase, impact statistics, systemic comparison, and 24x7 emergency helpline.
+* `src/components/AuthModal.tsx`: Role-based authentication modal with 1-click test personas for Citizens (Ramesh Patil, Kamla Devi) and Medical Staff (Sunita Devi ASHA, Dr. Deshmukh CMO, Dr. Sharma DHO).
+* `src/components/PatientDashboard.tsx`: Dedicated citizen portal with multi-member family locker, prescription reader, camera photo scanner with multimodal Gemini Vision OCR, lab report tracker, and upcoming checkups.
+* `src/components/StaffDashboard.tsx`: Clinical telemetry portal with bilingual voice triage (Groq Whisper fallback), live GPS ambulance tracking, ICU bottleneck simulation, casualty handover queue, and DHO equipment uptime radar.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## Local Development
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Production Build
+```bash
+npm run build
+```
