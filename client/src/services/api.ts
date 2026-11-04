@@ -1,6 +1,7 @@
 import type { Facility, Referral, Severity } from '../types';
 
-const API_BASE = '/api';
+const rawBase = (import.meta.env.VITE_API_BASE_URL as string | undefined) || '/api';
+const API_BASE = rawBase.endsWith('/api') ? rawBase : `${rawBase.replace(/\/$/, '')}/api`;
 
 export async function fetchFacilities(): Promise<Facility[]> {
   try {
