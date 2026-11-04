@@ -85,14 +85,29 @@ export const Header: React.FC<HeaderProps> = ({ mobileMenuOpen, onToggleMobileMe
         </div>
 
         {/* User Profile & Emergency Helpline */}
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700">
-            <span className="material-symbols-outlined text-lg">call</span>
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Mobile Quick Dial Button */}
+          <a
+            href="tel:108"
+            title="Emergency Ambulance Hotline: Call 108"
+            className="flex sm:hidden items-center justify-center w-8 h-8 rounded-full bg-rose-600 hover:bg-rose-700 active:scale-95 text-white shadow-xs transition cursor-pointer"
+            aria-label="Call Emergency 108"
+          >
+            <span className="material-symbols-outlined text-base">call</span>
+          </a>
+
+          {/* Desktop/Tablet Clickable Emergency Banner */}
+          <a
+            href="tel:108"
+            title="Emergency Toll-Free Helpline: Click to Call 108 / 104"
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 active:bg-rose-200 border border-rose-200 text-rose-800 transition cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-lg text-rose-600">call</span>
             <div className="flex flex-col text-left">
-              <span className="text-[10px] uppercase font-bold leading-none">Emergency Helpline</span>
-              <span className="text-xs font-bold leading-tight mt-0.5">108 / 104 Toll-Free</span>
+              <span className="text-[10px] uppercase font-bold leading-none text-rose-600">Emergency Helpline</span>
+              <span className="text-xs font-bold leading-tight mt-0.5 text-rose-900">108 / 104 Toll-Free (Call)</span>
             </div>
-          </div>
+          </a>
           <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
             <div className="relative">
               <div className="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center font-bold text-sm ring-2 ring-teal-600/20">

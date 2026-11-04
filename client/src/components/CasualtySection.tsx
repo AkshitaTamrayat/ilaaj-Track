@@ -101,7 +101,7 @@ export const CasualtySection: React.FC<CasualtySectionProps> = ({ referrals, onR
             <div className="flex flex-wrap gap-2.5">
               <button
                 onClick={() => handleAdvance('ARRIVED', 'Patient arrived at hospital casualty gate via 108 ambulance')}
-                disabled={updating || activeReferral?.status !== 'EN_ROUTE'}
+                disabled={updating || (activeReferral?.status !== 'EN_ROUTE' && activeReferral?.status !== 'ACCEPTED')}
                 className="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 disabled:opacity-40 cursor-pointer"
               >
                 1. Confirm Casualty Arrival
