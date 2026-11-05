@@ -43,20 +43,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           
           {/* Logo & Brand Identity */}
-          <div className="flex items-center gap-3.5">
+          <div className="flex items-center gap-3 sm:gap-3.5">
             <img
               src="/logo.png"
               alt="Ilaaj Track Logo"
-              className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl object-contain bg-white p-0.5 shadow-xs border border-teal-100"
+              className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl object-contain bg-white p-1 shadow-xs border border-teal-100 shrink-0"
             />
-            <div className="flex flex-col">
-              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-outfit leading-none">
-                Ilaaj<span className="text-teal-700"> Track</span>
-              </span>
-              <span className="text-xs text-slate-500 font-medium tracking-wide mt-1">
-                AI Closed-Loop Referral & Care Continuity
-              </span>
-            </div>
+            <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 font-outfit leading-none">
+              Ilaaj<span className="text-teal-700"> Track</span>
+            </span>
           </div>
 
           {/* Center Navigation Links (Desktop) */}
@@ -524,12 +519,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <img
                 src="/logo.png"
                 alt="Ilaaj Track Emblem"
-                className="w-10 h-10 rounded-xl bg-white p-1 object-contain"
+                className="w-10 h-10 rounded-xl bg-white p-1 object-contain shrink-0"
               />
-              <div>
-                <span className="text-base font-bold text-white block">Ilaaj Track</span>
-                <span className="text-[11px] text-slate-500">National Healthcare Referral & Care Continuity Network</span>
-              </div>
+              <span className="text-lg font-black text-white tracking-tight font-outfit block">
+                Ilaaj<span className="text-teal-400"> Track</span>
+              </span>
             </div>
 
             <div className="flex items-center gap-4 text-[11px]">

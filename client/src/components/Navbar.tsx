@@ -20,22 +20,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
         
         {/* Brand */}
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/10">
+          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/10 shrink-0">
             <Activity className="w-5 h-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-display font-extrabold text-2xl tracking-tight text-white">
-                Ilaaj<span className="text-emerald-400"> Track</span>
-              </span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                SIH 2026
-              </span>
-            </div>
-            <p className="text-xs text-slate-400">
-              AI-Orchestrated Closed-Loop Healthcare Referral & Care Continuity
-            </p>
+          <div className="flex items-center gap-2">
+            <span className="font-display font-black text-2xl tracking-tight text-white">
+              Ilaaj<span className="text-emerald-400"> Track</span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+              SIH 2026
+            </span>
           </div>
         </div>
 

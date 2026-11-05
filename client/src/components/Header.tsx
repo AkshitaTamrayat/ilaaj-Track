@@ -31,14 +31,9 @@ export const Header: React.FC<HeaderProps> = ({ mobileMenuOpen, onToggleMobileMe
             alt="Ilaaj Track Logo"
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-contain shadow-xs border border-teal-100 bg-white shrink-0"
           />
-          <div className="flex flex-col min-w-0">
-            <span className="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-none font-outfit truncate">
-              Ilaaj<span className="text-teal-700"> Track</span>
-            </span>
-            <span className="text-[11px] sm:text-xs font-medium text-slate-500 mt-1 truncate">
-              Rural Care Continuity
-            </span>
-          </div>
+          <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-none font-outfit truncate">
+            Ilaaj<span className="text-teal-700"> Track</span>
+          </span>
 
           <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>

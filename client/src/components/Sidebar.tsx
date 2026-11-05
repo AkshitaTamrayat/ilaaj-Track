@@ -60,13 +60,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center gap-3">
             <img
               src="/logo.png"
-              alt="Ilaaj Track Official Emblem"
-              className="w-11 h-11 rounded-xl object-contain shadow-xs border border-teal-100 bg-white"
+              alt="Ilaaj Track Logo"
+              className="w-10 h-10 rounded-xl object-contain shadow-xs border border-teal-100 bg-white shrink-0"
             />
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-slate-800 leading-tight">National Health Portal</span>
-              <span className="text-[10px] text-teal-700 font-semibold">Rural Care Continuity</span>
-            </div>
+            <span className="text-base font-black text-slate-900 tracking-tight leading-none font-outfit">
+              Ilaaj<span className="text-teal-700"> Track</span>
+            </span>
           </div>
           {isMobileDrawer && onCloseMobileMenu && (
             <button

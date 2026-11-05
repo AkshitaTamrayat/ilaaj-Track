@@ -87,21 +87,14 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
             <img
               src="/logo.png"
               alt="Ilaaj Track Logo"
-              className="w-10 h-10 rounded-xl object-contain bg-white p-0.5 border border-teal-100 shadow-xs"
+              className="w-10 h-10 rounded-xl object-contain bg-white p-0.5 border border-teal-100 shadow-xs shrink-0"
             />
-            <div className="flex flex-col text-left">
-              <div className="flex items-center gap-2">
-                <span className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight font-outfit">
-                  Ilaaj<span className="text-teal-700"> Track</span>
-                </span>
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-teal-50 text-teal-800 border border-teal-200">
-                  Clinical & Staff Portal
-                </span>
-              </div>
-              <span className="text-[11px] text-slate-500 font-medium">
-                Melghat Frontline Referral & Transit Engine
-              </span>
-            </div>
+            <span className="text-xl sm:text-2xl font-black text-slate-900 leading-none font-outfit">
+              Ilaaj<span className="text-teal-700"> Track</span>
+            </span>
+            <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold rounded-md bg-teal-50 text-teal-800 border border-teal-200 ml-1">
+              Clinical & Staff Portal
+            </span>
           </div>
 
           {/* User Profile, Emergency 108 & Actions */}
