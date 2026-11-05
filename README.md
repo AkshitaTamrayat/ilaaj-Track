@@ -39,29 +39,54 @@ In public healthcare networks across rural India (Sub-Centers $\rightarrow$ Prim
 
    [ 1. Rural Health Post ]          [ 2. Cloud AI Engine ]         [ 3. Receiving Hospital ]
   • Frontline ASHA / ANM Worker    • Multimodal Gemini 3.8/2.5     • District Casualty Gate
-  • Indic Spoken Voice Input       • 6-Factor Facility Scorecard   • Bed Pre-Reservation
+  • 12-Language Spoken Voice STT   • Groq Whisper Large v3 Turbo   • Bed Pre-Reservation
   • Handwritten Slip Camera OCR    • Dynamic Haversine Routing     • QR Token Fast-Track
             │                               │                              │
             ▼                               ▼                              ▼
   ┌───────────────────┐           ┌───────────────────┐          ┌───────────────────┐
-  │ Voice/OCR Triage  │──────────►│ Care Readiness &  │─────────►│ Pre-Arrival Queue │
-  │ & Vital Extraction│           │ Smart Rerouting   │          │ & Green Corridor  │
+  │ Voice CDSS Triage │ ────────> │ Facility Capacity │ ───────> │ Priority Casualty │
+  │ & OCR Vitals Grab │           │ Verification & GPS│          │ Slot & Pre-Arrival│
   └───────────────────┘           └───────────────────┘          └───────────────────┘
-            ▲                                                              │
-            │                                                              ▼
-  ┌───────────────────┐                                          ┌───────────────────┐
-  │ DHO Infrastructure│◄─────────────────────────────────────────│ Counter-Referral  │
-  │ Network Heatmap   │        Live Closed-Loop Feedback         │ Village Follow-Up │
-  └───────────────────┘                                          └───────────────────┘
+            │                                                              │
+            │                     [ 4. Village Recovery ]                  │
+            │                     • Counter-Referral Loop                  │
+            │                     • ₹50 ASHA NHM Incentive                 │
+            │                     • Digital Care Continuity                │
+            │                               ▲                              │
+            └───────────────────────────────┴──────────────────────────────┘
 ```
 
 ---
 
 ## 🌟 Key Platform Capabilities
 
-### 1. 🌟 Pro Max Healthcare Landing Page (`LandingPage.tsx`)
+### 1. 🎙️ Multilingual Voice Engine & 12 Indian Languages (`LanguageContext.tsx`)
+* **12 Comprehensive Regional Languages & Vernaculars:**
+  * 🇮🇳 **हिन्दी (Hindi)** (`hi` / `hi-IN`) — North & Central India
+  * 🇮🇳 **मराठी (Marathi)** (`mr` / `mr-IN`) — Maharashtra & Melghat Tribal Corridor
+  * 🇮🇳 **বাংলা (Bengali)** (`bn` / `bn-IN`) — West Bengal & Eastern India
+  * 🇮🇳 **తెలుగు (Telugu)** (`te` / `te-IN`) — Andhra Pradesh & Telangana
+  * 🇮🇳 **தமிழ் (Tamil)** (`ta` / `ta-IN`) — Tamil Nadu & South India
+  * 🇮🇳 **ગુજરાતી (Gujarati)** (`gu` / `gu-IN`) — Gujarat & Western India
+  * 🇮🇳 **ಕನ್ನಡ (Kannada)** (`kn` / `kn-IN`) — Karnataka & South India
+  * 🇮🇳 **മലയാളം (Malayalam)** (`ml` / `ml-IN`) — Kerala & South India
+  * 🇮🇳 **ਪੰਜਾਬੀ (Punjabi)** (`pa` / `pa-IN`) — Punjab & North India
+  * 🇮🇳 **ଓଡ଼ିଆ (Odia)** (`or` / `or-IN`) — Odisha & Eastern India
+  * 🇮🇳 **اردو (Urdu)** (`ur` / `ur-IN`) — Pan-India & South Asia
+  * 🌐 **English (Indian English)** (`en` / `en-IN`) — Pan-India & Global
+* **Dual Speech Pipeline:**
+  * **Client-side Web Speech API:** Binds to regional BCP-47 tags (`hi-IN`, `mr-IN`, etc.) for real-time streaming dictation.
+  * **Groq Whisper Large v3 Turbo Fallback:** Transcribes high-noise ambient audio files (`/api/triage/transcribe`) with Indic vocabulary prompt conditioning.
+* **Universal Searchable Language Modal (`LanguageModal.tsx`):**
+  * Accessible from the navigation bar of any page (Landing, Patient, Staff).
+  * Filter languages by native script, English name, or state/region.
+  * Persisted across user visits via `localStorage` (`ilaaj_lang`).
+* **Dialect-Specific Quick Presets:** 3 emergency presets per language (Heart Attack/ACS, Severe Asthma/Hypoxia, Major Polytrauma) in native script for instant 1-click clinical testing.
+* **Multilingual Clinical CDSS:** Gemini 2.5/3.8 Flash extracts vitals (BP, SpO₂, pulse, blood sugar), calculates ICMR triage severity (RED/AMBER/GREEN), and outputs standardized English clinical summaries for receiving doctors.
+
+### 2. 🌟 Modern Healthcare Landing Page (`LandingPage.tsx`)
 * **Official Emblem Hero Showcase:** Center-stage official emblem with an animated glowing medical aura, pulse wave indicators, and real-time live telemetry micro-badges.
-* **Bilingual Dual-Gateway Cards:** Direct 1-click access to the Citizen/Family Portal or the ASHA/Doctor Clinical Portal.
+* **Dual-Gateway Cards:** Direct 1-click access to the Citizen/Family Portal or the ASHA/Doctor Clinical Portal.
 * **Public Health Impact Radar:** Real-time statistics validating rural healthcare improvements:
   * `< 9.8%` Referral Drop-Out *(slashed from 48.2% Lancet baseline)*.
   * `62.4%` Travel Cost Savings *(saving families from catastrophic debt)*.
@@ -70,7 +95,7 @@ In public healthcare networks across rural India (Sub-Centers $\rightarrow$ Prim
 * **Systemic Comparison Table:** Side-by-side analysis of broken paper referrals vs. Ilaaj Track AI closed-loop network.
 * **24x7 Emergency Corridor Ribbon:** Direct clickable links to dial `108` (National Ambulance) and `104` (Medical Advisory).
 
-### 2. 🔐 Dual-Role Authentication & 1-Click Demo Profiles (`AuthModal.tsx`)
+### 3. 🔐 Dual-Role Authentication & 1-Click Demo Profiles (`AuthModal.tsx`)
 * **Citizen / Patient Mode:**
   * Quick 1-Click Personas: *Ramesh Patil (Hypertension & Diabetes)*, *Kamla Devi (Osteoarthritis)*, *Sunita Bai (Post-Op & Anemia)*.
   * Custom login with ABHA ID or 10-digit mobile number.
@@ -78,16 +103,16 @@ In public healthcare networks across rural India (Sub-Centers $\rightarrow$ Prim
   * Quick 1-Click Personas: *Sunita Devi (Lead ASHA Facilitator)*, *Dr. S. K. Deshmukh (Casualty Medical Officer)*, *Dr. Rajesh Sharma (District Health Officer)*.
   * Custom login with Staff Employee ID or ASHA registration code.
 
-### 3. 🏡 Dedicated Citizen & Family Health Vault (`PatientDashboard.tsx`)
+### 4. 🏠 Dedicated Citizen & Family Health Vault (`PatientDashboard.tsx`)
 * **Multi-Member Health Locker:** Track records across family members (Self, Mother, Father, Spouse, Child) with negative age clamping (`0-125`).
-* **Prescription Slip Reader:** Displays doctor name, clinic, diagnosis, and medications with Hindi dose timings (e.g. `1-0-1 सुबह-रात`).
+* **Prescription Slip Reader:** Displays doctor name, clinic, diagnosis, and medications with dose timings.
 * **Multimodal Camera Photo Scanner:** Photograph physical handwritten doctor prescriptions or lab reports; Gemini Vision OCR automatically extracts medicines, diagnoses, and lab values into editable, persistent storage.
 * **Diagnostic Lab Reports:** Blood sugar, ECG, lipid profile values visually compared with normal ranges, flagging abnormal markers.
 * **Upcoming ASHA Checkups:** Digital glucometer and BP check schedules with completion tracking.
 * **Emergency Ambulance Telemetry:** Live readiness of nearest tertiary hospital with instant 108 dialer and first-aid instructions for chest pain, stroke, and maternal labor.
 
-### 4. 🚑 Clinical Telemetry & Frontline Staff Dashboard (`StaffDashboard.tsx`)
-* **Bilingual Voice Intake CDSS:** Dictate patient symptoms in colloquial Hindi or Marathi. Native speech recognition with automated fallback to **Groq Whisper Large v3 Turbo**; extracts vitals, red flags, and assigns RED/AMBER/GREEN triage urgency.
+### 5. 🚑 Clinical Telemetry & Frontline Staff Dashboard (`StaffDashboard.tsx`)
+* **Vernacular Voice Intake CDSS:** Dictate patient symptoms in colloquial vernaculars. Native speech recognition with automated fallback to **Groq Whisper Large v3 Turbo**; extracts vitals, red flags, and assigns RED/AMBER/GREEN triage urgency.
 * **Dynamic Haversine Reroute Engine:** Evaluates receiving hospitals across 6 live criteria (doctor duty, ICU capacity $<85\%$, ECG/X-Ray uptime, blood bank, corridor transit, identity verification).
 * **ICU Bottleneck Simulation:** Hackathon-winning feature allowing judges to simulate a 100% ICU surge at the District Hospital; spatial routing automatically reroutes active ambulances to Achalpur Sub-District Hospital with a symmetrical reset toggle.
 * **Hospital Casualty Handover:** Pre-arrival queue with digital QR token, step-by-step state machine transitions (`ARRIVED` $\rightarrow$ `TREATED` $\rightarrow$ `DISCHARGED`), and post-discharge counter-referral handback loop to the village ASHA with a ₹50 performance incentive claim.
@@ -111,12 +136,13 @@ In public healthcare networks across rural India (Sub-Centers $\rightarrow$ Prim
 | :--- | :--- |
 | **Frontend Framework** | React 18, Vite 8, TypeScript, Tailwind CSS v4, Canvas Confetti |
 | **Typography & Icons** | Outfit, Plus Jakarta Sans, Inter, Google Material Symbols Outlined |
+| **Multilingual Engine** | 12 Vernaculars, Web Speech API (BCP-47), LocalStorage Persistence |
 | **Backend Runtime** | Node.js, Express, Multer, REST APIs |
 | **Clinical Multimodal AI**| Google Gemini 3.8 & 2.5 Flash (Vision Slip OCR & CDSS Triage) |
 | **Speech-to-Text AI** | Groq Whisper Large v3 Turbo (Sub-second Indic Vernacular STT) |
 | **Spatial Engine** | Haversine Formula Matrix for Real-time Hospital Geo-Routing |
 | **Security & Middleware**| Express Security Headers, Rate Limiting, 10MB Multer DoS Guard |
-| **Hosting & CDN** | Antideploy (Cloudflare Global Edge CDN + Fly.io) |
+| **Frontend CDN Hosting** | Antideploy (Cloudflare Global Edge CDN + Fly.io) |
 | **Backend Infrastructure** | Render Cloud Web Services |
 
 ---
