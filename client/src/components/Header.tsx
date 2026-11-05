@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface HeaderProps {
   activeTab: string;
@@ -7,6 +8,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ mobileMenuOpen, onToggleMobileMenu }) => {
+  const { currentLanguage, openLanguageModal } = useLanguage();
   return (
     <header className="fixed top-0 left-0 right-0 h-16 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
       <div className="h-16 w-full px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
@@ -98,6 +100,18 @@ export const Header: React.FC<HeaderProps> = ({ mobileMenuOpen, onToggleMobileMe
               <span className="text-xs font-bold leading-tight mt-0.5 text-rose-900">108 / 104 Toll-Free (Call)</span>
             </div>
           </a>
+
+          {/* Language Selector */}
+          <button
+            type="button"
+            onClick={openLanguageModal}
+            title="Select Language / भाषा चुनें"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer"
+          >
+            <span className="text-sm">{currentLanguage.flag}</span>
+            <span className="hidden sm:inline">{currentLanguage.nativeName}</span>
+            <span className="material-symbols-outlined text-xs text-slate-400">translate</span>
+          </button>
           <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
             <div className="relative">
               <div className="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center font-bold text-sm ring-2 ring-teal-600/20">

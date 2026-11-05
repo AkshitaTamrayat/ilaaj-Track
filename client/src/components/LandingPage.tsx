@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface LandingPageProps {
   onOpenAuth: (role: 'patient' | 'staff') => void;
@@ -9,6 +10,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onOpenAuth,
   onQuickEnter
 }) => {
+  const { currentLanguage, openLanguageModal } = useLanguage();
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-teal-100 selection:text-teal-900">
 
@@ -68,6 +70,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           {/* Header Action Buttons */}
           <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={openLanguageModal}
+              title="Select Language / भाषा चुनें"
+              className="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition cursor-pointer flex items-center gap-1.5"
+            >
+              <span className="text-sm">{currentLanguage.flag}</span>
+              <span className="font-semibold text-slate-800">{currentLanguage.nativeName}</span>
+              <span className="material-symbols-outlined text-sm text-slate-400">expand_more</span>
+            </button>
             <button
               onClick={() => onOpenAuth('patient')}
               className="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold text-teal-800 bg-teal-50 hover:bg-teal-100/80 border border-teal-200 transition cursor-pointer flex items-center gap-1.5"

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { UserProfile } from './AuthModal';
 import { FamilyHealthSection } from './FamilyHealthSection';
+import { useLanguage } from '../context/LanguageContext';
 
 interface PatientDashboardProps {
   user: UserProfile;
@@ -13,6 +14,7 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({
   onSwitchToStaff,
   onLogout
 }) => {
+  const { currentLanguage, openLanguageModal } = useLanguage();
   const [activeTab, setActiveTab] = useState<'vault' | 'emergency'>('vault');
 
   return (
@@ -49,6 +51,18 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({
               <span className="material-symbols-outlined text-base text-rose-600">call</span>
               <span className="hidden sm:inline">Emergency</span> 108
             </a>
+
+            {/* Language Selector */}
+            <button
+              type="button"
+              onClick={openLanguageModal}
+              title="Select Language / भाषा चुनें"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer"
+            >
+              <span className="text-sm">{currentLanguage.flag}</span>
+              <span className="hidden sm:inline">{currentLanguage.nativeName}</span>
+              <span className="material-symbols-outlined text-xs text-slate-400">translate</span>
+            </button>
 
             {/* User Badge */}
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">

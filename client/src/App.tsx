@@ -3,6 +3,8 @@ import { LandingPage } from './components/LandingPage';
 import { AuthModal, type UserProfile } from './components/AuthModal';
 import { PatientDashboard } from './components/PatientDashboard';
 import { StaffDashboard } from './components/StaffDashboard';
+import { LanguageModal } from './components/LanguageModal';
+import { LanguageProvider } from './context/LanguageContext';
 import { fetchFacilities, fetchReferrals, createReferral } from './services/api';
 import type { Facility, Referral } from './types';
 
@@ -28,7 +30,7 @@ const DEFAULT_STAFF_USER: UserProfile = {
   location: 'Semadoh Sub-Center'
 };
 
-export function App() {
+function AppContent() {
   const [currentView, setCurrentView] = useState<'landing' | 'patient' | 'staff'>('landing');
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -159,7 +161,18 @@ export function App() {
         defaultRole={authRole}
       />
 
+      {/* Universal Multilingual Selection Modal (12 Vernacular Languages) */}
+      <LanguageModal />
+
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }
 

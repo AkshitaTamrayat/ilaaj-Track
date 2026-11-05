@@ -365,10 +365,13 @@ export async function createReferral(referralData: Partial<Referral>): Promise<{
   }
 }
 
-export async function transcribeAudio(audioBlob: Blob): Promise<{ success: boolean; text?: string; error?: string }> {
+export async function transcribeAudio(audioBlob: Blob, language?: string): Promise<{ success: boolean; text?: string; error?: string }> {
   try {
     const formData = new FormData();
     formData.append('audioFile', audioBlob, 'triage_audio.webm');
+    if (language) {
+      formData.append('language', language);
+    }
     const res = await fetch(`${API_BASE}/triage/transcribe`, {
       method: 'POST',
       body: formData

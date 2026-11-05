@@ -534,13 +534,28 @@ app.patch('/api/family-members/:id/checkups/:checkupId', (req, res) => {
 // 1. Voice Triage / CDSS Symptom Understanding (Gemini 2.5 Flash + Whisper fallback)
 app.post('/api/triage/voice', aiRateLimiter, async (req, res) => {
   try {
-    const { spokenText, language = 'mr' } = req.body;
+    const { spokenText, language = 'hi' } = req.body;
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (apiKey && spokenText) {
-      // Live Gemini 2.5 Flash call with structured clinical prompt
+      const LANGUAGE_NAMES = {
+        en: 'English',
+        hi: 'Hindi',
+        mr: 'Marathi',
+        bn: 'Bengali',
+        te: 'Telugu',
+        ta: 'Tamil',
+        gu: 'Gujarati',
+        kn: 'Kannada',
+        ml: 'Malayalam',
+        pa: 'Punjabi',
+        or: 'Odia',
+        ur: 'Urdu'
+      };
+      const targetLang = LANGUAGE_NAMES[language] || language || 'any detected Indian or Global vernacular';
+      // Live Gemini 3.8 / 2.5 Flash call with structured multilingual clinical prompt
       const prompt = `You are the Clinical Decision Support System (CDSS) for Ilaaj Track, trained on ICMR and WHO rural referral guidelines.
-Analyze the following patient symptom dictation in ${language === 'mr' ? 'Marathi' : 'Hindi'}:
+Analyze the following patient symptom dictation in ${targetLang} (or any auto-detected vernacular):
 "${spokenText}"
 
 Return a strict JSON response conforming exactly to this structure:
@@ -669,7 +684,10 @@ app.post('/api/triage/transcribe', aiRateLimiter, upload.single('audioFile'), as
       const blob = new Blob([req.file.buffer], { type: req.file.mimetype || 'audio/webm' });
       formData.append('file', blob, 'audio.webm');
       formData.append('model', 'whisper-large-v3-turbo');
-      formData.append('prompt', 'Transcribe native Indian rural healthcare symptoms in Hindi or Marathi.');
+      if (req.body.language) {
+        formData.append('language', req.body.language);
+      }
+      formData.append('prompt', 'Transcribe native Indian rural healthcare symptoms accurately in Hindi, Marathi, Bengali, Telugu, Tamil, Gujarati, Kannada, Malayalam, Punjabi, Odia, Urdu, or English.');
 
       const groqRes = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
         method: 'POST',

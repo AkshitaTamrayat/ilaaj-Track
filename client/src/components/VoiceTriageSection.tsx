@@ -1,17 +1,225 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { runVoiceTriage, runPrescriptionOCR, transcribeAudio } from '../services/api';
+import { useLanguage, SUPPORTED_LANGUAGES } from '../context/LanguageContext';
 import confetti from 'canvas-confetti';
 
 interface VoiceTriageSectionProps {
   onReferralCreated: (referralData: any) => void;
 }
 
+const PRESETS_BY_LANGUAGE: Record<string, { label: string; text: string; icon: string }[]> = {
+  hi: [
+    {
+      label: 'छाती में तेज़ दर्द व पसीना (Heart Attack)',
+      text: 'मरीज़ को सुबह से छाती में तेज़ दर्द है, पसीना आ रहा है और सांस लेने में दिक्कत है। BP 168/104 है, पल्स 112 है। सुबह 10:15 बजे Sorbitrate 5mg और Aspirin 300mg दे दी गई है।',
+      icon: '🚨'
+    },
+    {
+      label: 'सांस फूलना व कम SpO2 (Severe Asthma)',
+      text: 'मरीज़ को सांस लेने में बहुत दिक्कत हो रही है, घरघराहट है, SpO2 86% है और BP 150/95 है। 1 घंटे से हालत गंभीर है।',
+      icon: '⚠️'
+    },
+    {
+      label: 'दुर्घटना व फ्रैक्चर (Major Trauma)',
+      text: 'मोटरसाइकिल दुर्घटना, मरीज के दाहिने पैर में फ्रैक्चर है और बहुत खून बह रहा है। BP 90/60 है, नब्ज़ 120 है।',
+      icon: '🩸'
+    }
+  ],
+  mr: [
+    {
+      label: 'छातीत तीव्र वेदना व घाम (ACS/हार्ट अटॅक)',
+      text: 'रुग्णाला सकाळपासून छातीत तीव्र कळ येते आहे, खूप घाम सुटला आहे आणि श्वास घेण्यास त्रास होत आहे. रक्तदाब १६८/१०४ आहे, नाडी ११० आहे. सॉर्बिट्रेट ५ मिलीग्रॅम दिली आहे.',
+      icon: '🚨'
+    },
+    {
+      label: 'दम लागणे व ऑक्सिजन कमी (श्वसन विकार)',
+      text: 'रुग्णाला तीव्र दम लागला आहे, घरघर ऐकू येतेय, SpO2 ८८% आहे आणि रक्तदाब १५०/९५ आहे. ताबडतोब ऑक्सिजनची गरज आहे.',
+      icon: '⚠️'
+    },
+    {
+      label: 'रस्ता अपघात व फ्रॅक्चर (Emergency Trauma)',
+      text: 'रस्ता अपघात झाला आहे, उजव्या पायाचे हाड मोडले असून रक्तस्त्राव होत आहे, BP ९०/६० आहे, नाडी १२० आहे.',
+      icon: '🩸'
+    }
+  ],
+  bn: [
+    {
+      label: 'বুকে তীব্র ব্যথা ও ঘাম (Heart Attack)',
+      text: 'রোগীর সকাল থেকে বুকে প্রচণ্ড ব্যথা, শরীর ঘেমে যাচ্ছে এবং শ্বাস নিতে কষ্ট হচ্ছে। বিপি ১৭০/১০৫, পালস ১১০। সকাল ১০টায় অ্যাসপিরিন দেওয়া হয়েছে।',
+      icon: '🚨'
+    },
+    {
+      label: 'শ্বাসকষ্ট ও কম অক্সিজেন (Severe Asthma)',
+      text: 'শ্বাস নিতে ভীষণ কষ্ট হচ্ছে, বুকের মধ্যে সাঁই সাঁই শব্দ হচ্ছে, SpO2 ৮৭% নেমে গেছে এবং রক্তচাপ ১৫০/৯৫।',
+      icon: '⚠️'
+    },
+    {
+      label: 'দুর্ঘটনা ও ফ্র্যাকচার (Major Trauma)',
+      text: 'বাইক দুর্ঘটনা, রোগীর ডান পায়ে ফ্র্যাকচার হয়েছে এবং প্রচুর রক্তপাত হচ্ছে। বিপি ৯০/৬০, পালস ১২০।',
+      icon: '🩸'
+    }
+  ],
+  te: [
+    {
+      label: 'గుండెల్లో తీవ్ర నొప్పి (Heart Attack)',
+      text: 'రోగికి ఉదయం నుండి గుండెల్లో తీవ్రమైన నొప్పి వస్తోంది, విపరీతమైన చెమటలు పడుతున్నాయి, శ్వాస తీసుకోవడం కష్టంగా ఉంది. BP 170/100, పల్స్ 110.',
+      icon: '🚨'
+    },
+    {
+      label: 'శ్వాస ఆడకపోవడం (Asthma Crisis)',
+      text: 'రోగికి శ్వాస అందడం లేదు, ఆయాసంగా ఉంది, SpO2 88% కి పడిపోయింది, BP 150/95.',
+      icon: '⚠️'
+    },
+    {
+      label: 'రోడ్డు ప్రమాదం (Major Trauma)',
+      text: 'రోడ్డు ప్రమాదం జరిగింది, కుడి కాలు విరిగింది మరియు తీవ్ర రక్తస్రావం అవుతోంది. BP 90/60, పల్స్ 120.',
+      icon: '🩸'
+    }
+  ],
+  ta: [
+    {
+      label: 'மாரடைப்பு நெஞ்சு வலி (Heart Attack)',
+      text: 'நோயாளிக்கு கடுமையான மார்பு வலி உள்ளது, அதிக வியர்வை வெளியேறுகிறது, மூச்சு விடுவதில் சிரமம். இரத்த அழுத்தம் 165/102, நாடித்துடிப்பு 112.',
+      icon: '🚨'
+    },
+    {
+      label: 'மூச்சுத்திணறல் (Severe Asthma)',
+      text: 'நோயாளிக்கு கடுமையான மூச்சுத்திணறல் ஏற்பட்டுள்ளது, ஆக்சிஜன் SpO2 87% ஆக குறைந்துள்ளது, BP 150/95.',
+      icon: '⚠️'
+    },
+    {
+      label: 'விபத்து & எலும்பு முறிவு (Trauma)',
+      text: 'வாகன விபத்து, வலது காலில் முறிவு ஏற்பட்டு அதிக ரத்தப்போக்கு உள்ளது. BP 90/60, நாடித்துடிப்பு 120.',
+      icon: '🩸'
+    }
+  ],
+  gu: [
+    {
+      label: 'છાતીમાં સખત દુખાવો (Heart Attack)',
+      text: 'દર્દીને સવારથી છાતીમાં સખત દુખાવો થાય છે, ખૂબ પરસેવો વળે છે અને શ્વાસ લેવામાં તકલીફ થાય છે. BP 168/104 છે, પલ્સ 112 છે.',
+      icon: '🚨'
+    },
+    {
+      label: 'શ્વાસ લેવામાં તકલીફ (Asthma Emergency)',
+      text: 'દર્દીને શ્વાસ ચઢે છે, છાતીમાં ઘરઘરાટી બોલે છે, SpO2 87% છે અને BP 150/95 છે.',
+      icon: '⚠️'
+    },
+    {
+      label: 'અકસ્માત અને ફ્રેક્ચર (Major Trauma)',
+      text: 'બાઇક અકસ્માત, જમણા પગમાં ફ્રેક્ચર છે અને ઘણું લોહી વહી રહ્યું છે. BP 90/60, પલ્સ 120 છે.',
+      icon: '🩸'
+    }
+  ],
+  kn: [
+    {
+      label: 'ಎದೆ ನೋವು ಮತ್ತು ಬೆವರು (Heart Attack)',
+      text: 'ರೋಗಿಗೆ ಎದೆಯಲ್ಲಿ ತೀವ್ರ ನೋವು ಕಾಣಿಸಿಕೊಂಡಿದೆ, ಬೆವರು ಬರುತ್ತಿದೆ ಮತ್ತು ಉಸಿರಾಟದ ತೊಂದರೆಯಾಗಿದೆ. ಬಿಪಿ 168/104 ಇದೆ, ನಾಡಿಮಿಡಿತ 112 ಇದೆ.',
+      icon: '🚨'
+    },
+    {
+      label: 'ಉಸಿರಾಟದ ತೊಂದರೆ (Severe Asthma)',
+      text: 'ರೋಗಿಗೆ ಉಸಿರಾಡಲು ತುಂಬಾ ಕಷ್ಟವಾಗುತ್ತಿದೆ, ಆಮ್ಲಜನಕದ ಮಟ್ಟ SpO2 88% ಗೆ ಇಳಿದಿದೆ, ಬಿಪಿ 150/95.',
+      icon: '⚠️'
+    },
+    {
+      label: 'ಅಪಘಾತ ಮತ್ತು ಮುರಿತ (Major Trauma)',
+      text: 'ರಸ್ತೆ ಅಪಘಾತ, ಬಲಗಾಲಿನಲ್ಲಿ ಮೂಳೆ ಮುರಿತವಾಗಿದ್ದು ರಕ್ತಸ್ರಾವವಾಗುತ್ತಿದೆ. ಬಿಪಿ 90/60, ನಾಡಿ 120.',
+      icon: '🩸'
+    }
+  ],
+  ml: [
+    {
+      label: 'നെഞ്ചുവേദനയും അസ്വസ്ഥതയും (Heart Attack)',
+      text: 'രോഗിക്ക് കടുത്ത നെഞ്ചുവേദനയും അമിതമായ വിയർപ്പും ശ്വാസതടസ്സവുമുണ്ട്. ബിപി 170/100, പൾസ് 110. സോർബിട്രേറ്റ് നൽകി.',
+      icon: '🚨'
+    },
+    {
+      label: 'ശ്വാസംമുട്ടൽ (Severe Asthma)',
+      text: 'രോഗിക്ക് കടുത്ത ശ്വാസംമുട്ടൽ അനുഭവപ്പെടുന്നു, ഓക്സിജൻ നില SpO2 87% ആയി കുറഞ്ഞു, ബിപി 150/95.',
+      icon: '⚠️'
+    },
+    {
+      label: 'അപകടം & പരിക്ക് (Emergency Trauma)',
+      text: 'വാഹനാപകടം, വലതുകാലിൽ ഒടിവുണ്ടായി കടുത്ത രക്തസ്രാവമുണ്ട്. ബിപി 90/60, പൾസ് 120.',
+      icon: '🩸'
+    }
+  ],
+  pa: [
+    {
+      label: 'ਛਾਤੀ ਵਿੱਚ ਤੇਜ਼ ਦਰਦ (Heart Attack)',
+      text: 'ਮਰੀਜ਼ ਨੂੰ ਛਾਤੀ ਵਿੱਚ ਬਹੁਤ ਤੇਜ਼ ਦਰਦ ਹੋ ਰਿਹਾ ਹੈ, ਪਸੀਨਾ ਆ ਰਿਹਾ ਹੈ ਅਤੇ ਸਾਹ ਲੈਣ ਵਿੱਚ ਤਕਲੀਫ਼ ਹੈ। BP 170/100 ਹੈ, ਨਬਜ਼ 112 ਹੈ।',
+      icon: '🚨'
+    },
+    {
+      label: 'ਸਾਹ ਚੜ੍ਹਨਾ (Severe Asthma)',
+      text: 'ਮਰੀਜ਼ ਦਾ ਸਾਹ ਬਹੁਤ ਜ਼ਿਆਦਾ ਫੁੱਲ ਰਿਹਾ ਹੈ, SpO2 88% ਰਹਿ ਗਿਆ ਹੈ, BP 150/95 ਹੈ।',
+      icon: '⚠️'
+    },
+    {
+      label: 'ਹਾਦਸਾ ਤੇ ਫਰੈਕਚਰ (Major Trauma)',
+      text: 'ਸੜਕ ਹਾਦਸਾ, ਸੱਜੀ ਲੱਤ ਵਿੱਚ ਫਰੈਕਚਰ ਹੈ ਅਤੇ ਖੂਨ ਬਹੁਤ ਵਹਿ ਰਿਹਾ ਹੈ। BP 90/60, ਨਬਜ਼ 120.',
+      icon: '🩸'
+    }
+  ],
+  or: [
+    {
+      label: 'ଛାତି ଯନ୍ତ୍ରଣା ଓ ଝାଳ (Heart Attack)',
+      text: 'ରୋଗୀଙ୍କର ସକାଳୁ ଛାତିରେ ପ୍ରବଳ ଯନ୍ତ୍ରଣା ହେଉଛି, ପ୍ରବଳ ଝାଳ ବୋହୁଛି ଓ ନିଶ୍ୱାସ ନେବାରେ କଷ୍ଟ ହେଉଛି। BP 168/104 ଅଛି, ନାଡ଼ି ୧୧୨।',
+      icon: '🚨'
+    },
+    {
+      label: 'ଶ୍ୱାସକଷ୍ଟ (Severe Asthma)',
+      text: 'ନିଶ୍ୱାସ ନେବାରେ ବହୁତ ଅସୁବିଧା ହେଉଛି, SpO2 87% କୁ ଖସି ଆସିଛି, BP 150/95.',
+      icon: '⚠️'
+    },
+    {
+      label: 'ଦୁର୍ଘଟଣା (Major Trauma)',
+      text: 'ସଡ଼କ ଦୁର୍ଘଟଣା, ଡାହାଣ ଗୋଡ଼ରେ ଫ୍ରାକଚର ହୋଇଛି ଏବଂ ପ୍ରଚୁର ରକ୍ତସ୍ରାବ ହେଉଛି। BP 90/60, ନାଡ଼ି ୧୨୦।',
+      icon: '🩸'
+    }
+  ],
+  ur: [
+    {
+      label: 'سینے میں شدید درد (Heart Attack)',
+      text: 'مریض کے سینے میں صبح سے شدید درد ہے، بہت پسینہ آ رہا ہے اور سانس لینے میں دشواری ہو رہی ہے۔ بی پی 168/104 ہے اور نبض 112 ہے۔',
+      icon: '🚨'
+    },
+    {
+      label: 'سانس کی شدید تکلیف (Severe Asthma)',
+      text: 'مریض کو سانس لینے میں سخت دشواری پیش آ رہی ہے، آکسیجن SpO2 87 فیصد تک گر گیا ہے، بی پی 150/95 ہے۔',
+      icon: '⚠️'
+    },
+    {
+      label: 'حادثہ اور فریکچر (Major Trauma)',
+      text: 'روڈ ایکسیڈنٹ، دائیں ٹانگ میں فریکچر ہے اور بہت خون بہہ رہا ہے۔ بی پی 90/60 اور نبض 120 ہے۔',
+      icon: '🩸'
+    }
+  ],
+  en: [
+    {
+      label: 'Chest Pain & Sweating (Acute Coronary Syndrome)',
+      text: 'Patient has severe retrosternal chest pain radiating to left shoulder, profuse cold diaphoresis, and acute shortness of breath. BP is 168/104 mmHg, pulse 112 bpm. Sublingual Sorbitrate 5mg and Aspirin 300mg administered at 10:15 AM.',
+      icon: '🚨'
+    },
+    {
+      label: 'Acute Wheezing & Hypoxia (Status Asthmaticus)',
+      text: 'Patient in acute respiratory distress with loud expiratory wheezing, severe dyspnea, and SpO2 86% on room air. Tachycardic at 116 bpm, BP 152/96 mmHg.',
+      icon: '⚠️'
+    },
+    {
+      label: 'Major Polytrauma (Compound Fracture)',
+      text: 'Motorcycle collision trauma, open compound fracture of right tibia with active hemorrhage. BP 90/60 mmHg, heart rate 124 bpm, pale and cold extremities.',
+      icon: '🩸'
+    }
+  ]
+};
+
 export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferralCreated }) => {
+  const { currentLanguage, setLanguage, openLanguageModal } = useLanguage();
   const [spokenText, setSpokenText] = useState(
     'मरीज़ को सुबह से छाती में तेज़ दर्द है, पसीना आ रहा है और सांस लेने में दिक्कत है। BP 168/104 है, पल्स 112 है। सुबह 10:15 बजे Sorbitrate 5mg और Aspirin 300mg दे दी गई है...'
   );
   const [isRecording, setIsRecording] = useState(false);
-  const [selectedLang, setSelectedLang] = useState<'hi-IN' | 'en-IN'>('hi-IN');
   const [micStatus, setMicStatus] = useState<string>('Ready • Tap mic to speak');
   const [loading, setLoading] = useState(false);
   const [dispatched, setDispatched] = useState(false);
@@ -65,12 +273,12 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
       recorder.onstop = async () => {
         stream.getTracks().forEach(t => t.stop());
         if (audioChunksRef.current.length > 0) {
-          setMicStatus('Transcribing via Groq Whisper Large v3...');
+          setMicStatus(`Transcribing via Groq Whisper Large v3 (${currentLanguage.name})...`);
           const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-          const res = await transcribeAudio(audioBlob);
+          const res = await transcribeAudio(audioBlob, currentLanguage.code);
           if (res && res.text) {
             setSpokenText(res.text);
-            setMicStatus('Transcribed via Groq Whisper');
+            setMicStatus(`Transcribed via Groq Whisper (${currentLanguage.nativeName})`);
           } else {
             setMicStatus('Could not transcribe audio');
           }
@@ -80,7 +288,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
       recorder.start();
       mediaRecorderRef.current = recorder;
       setIsRecording(true);
-      setMicStatus('Listening via Microphone (Groq Whisper Mode)... Tap mic to stop');
+      setMicStatus(`Listening via Mic (Groq Whisper: ${currentLanguage.name})... Tap mic to stop`);
     } catch (err: any) {
       console.warn('Microphone permission or access error:', err);
       setMicStatus('Microphone blocked by browser. Please enable mic access.');
@@ -108,14 +316,14 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
       }
 
       const recognition = new SpeechRecognition();
-      recognition.lang = selectedLang;
+      recognition.lang = currentLanguage.speechCode;
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
 
       recognition.onstart = () => {
         setIsRecording(true);
-        setMicStatus(`Listening (${selectedLang === 'hi-IN' ? 'Hindi' : 'English'})... Speak into microphone`);
+        setMicStatus(`Listening (${currentLanguage.nativeName} • ${currentLanguage.speechCode})... Speak into microphone`);
       };
 
       recognition.onresult = (event: any) => {
@@ -159,7 +367,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
     if (!spokenText.trim()) return;
     setLoading(true);
     try {
-      const res = await runVoiceTriage(spokenText, 'hi');
+      const res = await runVoiceTriage(spokenText, currentLanguage.code);
       if (res && res.result) {
         setTriageResult(res.result);
       }
@@ -175,7 +383,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
     try {
       const res = await runPrescriptionOCR(file);
       if (res && res.result) {
-        const triageRes = await runVoiceTriage(res.result.prescribedMedicines.join(', '), 'hi');
+        const triageRes = await runVoiceTriage(res.result.prescribedMedicines.join(', '), currentLanguage.code);
         setTriageResult(triageRes.result);
       }
     } finally {
@@ -198,6 +406,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
         cdssSeverity: triageResult?.cdssSeverity || 'RED',
         suspectedCondition: triageResult?.suspectedCondition || 'Acute Coronary Syndrome / STEMI',
         requiredSpecialty: triageResult?.requiredSpecialty || 'Cardiology',
+        intakeLanguage: currentLanguage.name,
         careBundle: triageResult?.suggestedCareBundle || {
           consultation: 'Dr. Vikram Sen (Cardiologist on Duty)',
           diagnosticSlots: ['12-Lead ECG', 'Cardiac Troponin-I', 'Bedside 2D Echo'],
@@ -378,25 +587,40 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
               </div>
 
               <div className="flex items-center gap-2">
-                {/* Language Selector */}
-                <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                {/* Vernacular Language Selector Dropdown & Modal Trigger */}
+                <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                  <span className="text-base pl-1 shrink-0">{currentLanguage.flag}</span>
+                  <select
+                    value={currentLanguage.code}
+                    onChange={(e) => {
+                      const code = e.target.value;
+                      setLanguage(code);
+                      const sel = SUPPORTED_LANGUAGES.find(l => l.code === code);
+                      if (sel) {
+                        setMicStatus(`Voice intake language set to ${sel.nativeName} (${sel.name})`);
+                        const presets = PRESETS_BY_LANGUAGE[sel.code] || PRESETS_BY_LANGUAGE['en'];
+                        if (presets && presets[0]) {
+                          setSpokenText(presets[0].text);
+                        }
+                      }
+                    }}
+                    className="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer pr-1 py-0.5"
+                    aria-label="Select voice and intake language"
+                  >
+                    {SUPPORTED_LANGUAGES.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.nativeName} ({lang.name})
+                      </option>
+                    ))}
+                  </select>
                   <button
                     type="button"
-                    onClick={() => { setSelectedLang('hi-IN'); setMicStatus('Language set to Hindi'); }}
-                    className={`px-2 py-0.5 rounded text-[11px] font-bold transition ${
-                      selectedLang === 'hi-IN' ? 'bg-white text-teal-800 shadow-xs' : 'text-slate-500 hover:text-slate-700'
-                    }`}
+                    onClick={openLanguageModal}
+                    title="Open all 12 Indian regional languages"
+                    className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white text-teal-800 border border-slate-200 shadow-2xs hover:bg-teal-50 cursor-pointer flex items-center gap-0.5"
                   >
-                    हिंदी
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setSelectedLang('en-IN'); setMicStatus('Language set to English'); }}
-                    className={`px-2 py-0.5 rounded text-[11px] font-bold transition ${
-                      selectedLang === 'en-IN' ? 'bg-white text-teal-800 shadow-xs' : 'text-slate-500 hover:text-slate-700'
-                    }`}
-                  >
-                    English
+                    <span className="material-symbols-outlined text-xs">translate</span>
+                    <span>More</span>
                   </button>
                 </div>
 
@@ -492,41 +716,32 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
                 className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 leading-relaxed font-normal focus:outline-none focus:border-teal-700 focus:bg-white transition resize-none"
               />
 
-              {/* Instant Symptom Presets */}
+              {/* Dynamic Instant Multilingual Presets */}
               <div className="flex flex-wrap items-center gap-2 pt-1">
-                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-                  Quick Presets:
+                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                  <span>{currentLanguage.flag}</span>
+                  <span>{currentLanguage.nativeName} Presets:</span>
                 </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSpokenText('मरीज़ को सुबह से छाती में तेज़ दर्द है, पसीना आ रहा है और सांस लेने में दिक्कत है। BP 168/104 है, पल्स 112 है। सुबह 10:15 बजे Sorbitrate 5mg और Aspirin 300mg दे दी गई है।');
-                    setMicStatus('Loaded Heart Attack / ACS symptoms');
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold border border-rose-200 transition cursor-pointer"
-                >
-                  🚨 छाती में तेज़ दर्द व पसीना (Heart Attack)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSpokenText('मरीज़ को सांस लेने में बहुत दिक्कत हो रही है, घरघराहट है, SpO2 86% है और BP 150/95 है। 1 घंटे से हालत गंभीर है।');
-                    setMicStatus('Loaded Asthmatic Respiratory Emergency');
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold border border-amber-200 transition cursor-pointer"
-                >
-                  ⚠️ सांस फूलना व कम SpO2 (Severe Asthma)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSpokenText('मोटरसाइकिल दुर्घटना, मरीज के दाहिने पैर में फ्रैक्चर है और बहुत खून बह रहा है। BP 90/60 है, नब्ज़ 120 है।');
-                    setMicStatus('Loaded Road Accident Trauma symptoms');
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition cursor-pointer"
-                >
-                  🩸 दुर्घटना व फ्रैक्चर (Major Trauma)
-                </button>
+                {(PRESETS_BY_LANGUAGE[currentLanguage.code] || PRESETS_BY_LANGUAGE['en']).map((preset, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setSpokenText(preset.text);
+                      setMicStatus(`Loaded ${currentLanguage.name}: ${preset.label}`);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition cursor-pointer flex items-center gap-1 ${
+                      idx === 0 
+                        ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                        : idx === 1
+                        ? 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                    }`}
+                  >
+                    <span>{preset.icon}</span>
+                    <span>{preset.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
 

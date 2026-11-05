@@ -5,6 +5,7 @@ import { DynamicMapSection } from './DynamicMapSection';
 import { CasualtySection } from './CasualtySection';
 import { DhoHeatmapSection } from './DhoHeatmapSection';
 import { FamilyHealthSection } from './FamilyHealthSection';
+import { useLanguage } from '../context/LanguageContext';
 import type { Facility, Referral } from '../types';
 
 interface StaffDashboardProps {
@@ -26,37 +27,38 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
   onSwitchToPatient,
   onLogout
 }) => {
+  const { currentLanguage, openLanguageModal, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'triage' | 'map' | 'hospital' | 'telemetry' | 'community'>('triage');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const tabs = [
     {
       id: 'triage' as const,
-      label: 'Voice & Intake',
+      label: t('voiceIntake'),
       icon: 'mic',
       description: 'Voice CDSS & Slip OCR'
     },
     {
       id: 'map' as const,
-      label: 'Care & Transit',
+      label: t('careTransit'),
       icon: 'local_shipping',
       description: 'Dynamic GPS & Reroute'
     },
     {
       id: 'hospital' as const,
-      label: 'Casualty Handover',
+      label: t('hospitalHandover'),
       icon: 'domain_verification',
       description: 'Pre-Arrival & ASHA Handback'
     },
     {
       id: 'telemetry' as const,
-      label: 'DHO Radar',
+      label: t('districtRadar'),
       icon: 'analytics',
       description: 'Equipment Uptime Heatmap'
     },
     {
       id: 'community' as const,
-      label: 'Community Locker',
+      label: t('familyVault'),
       icon: 'family_restroom',
       description: 'Village Patient Slips'
     }
@@ -109,6 +111,18 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
               <span className="material-symbols-outlined text-base text-rose-600">call</span>
               <span className="hidden sm:inline">Ambulance</span> 108
             </a>
+
+            {/* Language Selector */}
+            <button
+              type="button"
+              onClick={openLanguageModal}
+              title="Select Language / भाषा चुनें"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer"
+            >
+              <span className="text-sm">{currentLanguage.flag}</span>
+              <span className="hidden sm:inline">{currentLanguage.nativeName}</span>
+              <span className="material-symbols-outlined text-xs text-slate-400">translate</span>
+            </button>
 
             {/* Staff Profile Badge */}
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
