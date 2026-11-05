@@ -409,7 +409,7 @@ export const FamilyHealthSection: React.FC = () => {
           />
           <div>
             <h1 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
-              Family Health Vault (परिवार स्वास्थ्य खाता)
+              Family Health Vault
             </h1>
             <p className="text-xs text-slate-500">
               AI Photo Scanner • Prescription Slips • Lab Reports • Contact Helpline
@@ -442,7 +442,7 @@ export const FamilyHealthSection: React.FC = () => {
         <div className="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
           <span className="flex items-center gap-1.5">
             <span className="material-symbols-outlined text-teal-700 text-base">groups</span>
-            Select Family Member (परिवार का सदस्य चुनें)
+            Select Family Member
           </span>
           <span className="text-[11px] text-teal-800 font-semibold lowercase">
             {members.length} members
@@ -544,17 +544,17 @@ export const FamilyHealthSection: React.FC = () => {
             <div className="flex items-center justify-around sm:justify-start gap-2 sm:gap-3 bg-white/10 backdrop-blur-md p-2.5 rounded-xl border border-white/15 w-full md:w-auto">
               <div className="text-center px-2 sm:px-3">
                 <div className="text-base sm:text-lg font-bold text-white">{selectedMember.prescriptions.length}</div>
-                <div className="text-[10px] text-teal-200">Slips (पर्ची)</div>
+                <div className="text-[10px] text-teal-200">Doctor Slips</div>
               </div>
               <div className="w-px h-7 bg-white/20"></div>
               <div className="text-center px-2 sm:px-3">
                 <div className="text-base sm:text-lg font-bold text-white">{selectedMember.labReports.length}</div>
-                <div className="text-[10px] text-teal-200">Reports (रिपोर्ट)</div>
+                <div className="text-[10px] text-teal-200">Lab Reports</div>
               </div>
               <div className="w-px h-7 bg-white/20"></div>
               <div className="text-center px-2 sm:px-3">
                 <div className="text-base sm:text-lg font-bold text-white">{selectedMember.checkups.length}</div>
-                <div className="text-[10px] text-teal-200">Checkups (जांच)</div>
+                <div className="text-[10px] text-teal-200">Checkups</div>
               </div>
             </div>
 
@@ -575,7 +575,7 @@ export const FamilyHealthSection: React.FC = () => {
             }`}
           >
             <span className="material-symbols-outlined text-base sm:text-lg">prescriptions</span>
-            <span>Doctor Slips (दवाई पर्ची)</span>
+            <span>Doctor Slips</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-700">
               {selectedMember?.prescriptions.length || 0}
             </span>
@@ -591,7 +591,7 @@ export const FamilyHealthSection: React.FC = () => {
             }`}
           >
             <span className="material-symbols-outlined text-base sm:text-lg">lab_profile</span>
-            <span>Lab Reports (जांच रिपोर्ट्स)</span>
+            <span>Lab Reports</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-700">
               {selectedMember?.labReports.length || 0}
             </span>
@@ -607,7 +607,7 @@ export const FamilyHealthSection: React.FC = () => {
             }`}
           >
             <span className="material-symbols-outlined text-base sm:text-lg">event_available</span>
-            <span>Check-ups (नियमित जांच)</span>
+            <span>Check-ups</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-700">
               {selectedMember?.checkups.length || 0}
             </span>
@@ -627,7 +627,7 @@ export const FamilyHealthSection: React.FC = () => {
               className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition active:scale-95"
             >
               <span className="material-symbols-outlined text-base">photo_camera</span>
-              📸 Scan / Add Prescription (पर्ची फोटो लें)
+              📸 Scan / Add Prescription
             </button>
           )}
 
@@ -642,7 +642,7 @@ export const FamilyHealthSection: React.FC = () => {
               className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition active:scale-95"
             >
               <span className="material-symbols-outlined text-base">photo_camera</span>
-              📸 Scan / Add Report (रिपोर्ट फोटो लें)
+              📸 Scan / Add Report
             </button>
           )}
 
@@ -653,7 +653,7 @@ export const FamilyHealthSection: React.FC = () => {
               className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs cursor-pointer transition active:scale-95"
             >
               <span className="material-symbols-outlined text-base">add_alarm</span>
-              + Schedule Check-up (जांच तय करें)
+              + Schedule Check-up
             </button>
           )}
         </div>
@@ -693,7 +693,7 @@ export const FamilyHealthSection: React.FC = () => {
                               className="inline-flex items-center gap-1 text-[10px] font-bold text-teal-700 bg-white border border-teal-200 px-2 py-0.5 rounded hover:bg-teal-50 cursor-pointer"
                             >
                               <span className="material-symbols-outlined text-xs">image</span>
-                              View Original Photo (मूल पर्ची देखें)
+                              View Original Photo
                             </button>
                           )}
                         </div>
@@ -716,7 +716,7 @@ export const FamilyHealthSection: React.FC = () => {
 
                     <div className="space-y-1.5">
                       <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                        Diagnosis (रोग/स्थिति):
+                        Diagnosis:
                       </div>
                       <p className="text-xs font-semibold text-slate-800 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                         {rx.diagnosis}
@@ -726,7 +726,7 @@ export const FamilyHealthSection: React.FC = () => {
                     {/* Medicines List with Rural Dosage Guide */}
                     <div className="space-y-2">
                       <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                        Prescribed Medicines (दवाइयां):
+                        Prescribed Medicines:
                       </div>
                       <div className="space-y-1.5">
                         {rx.medicines.map((med, idx) => (
@@ -816,7 +816,7 @@ export const FamilyHealthSection: React.FC = () => {
                               className="inline-flex items-center gap-1 text-[10px] font-bold text-teal-700 bg-white border border-teal-200 px-2 py-0.5 rounded hover:bg-teal-50 cursor-pointer"
                             >
                               <span className="material-symbols-outlined text-xs">image</span>
-                              View Photo (फोटो देखें)
+                              View Photo
                             </button>
                           )}
                         </div>
@@ -842,7 +842,7 @@ export const FamilyHealthSection: React.FC = () => {
                     {/* Key Test Values Table with Rural Explanations */}
                     <div className="space-y-1.5">
                       <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                        Observed Values (जांच के परिणाम):
+                        Observed Values:
                       </div>
                       <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-xs">
                         {rep.keyValues.map((kv, i) => (
@@ -932,7 +932,7 @@ export const FamilyHealthSection: React.FC = () => {
                               ? 'bg-blue-100 text-blue-900'
                               : 'bg-teal-100 text-teal-900'
                           }`}>
-                            {chk.type === 'ASHA_HOME_VISIT' ? 'आशा कार्यकर्ता मुलाकात' : 'अस्पताल जांच'}
+                            {chk.type === 'ASHA_HOME_VISIT' ? 'ASHA Home Visit' : 'Hospital Clinic'}
                           </span>
                         </div>
                         <p className="text-xs text-slate-500">
@@ -952,7 +952,7 @@ export const FamilyHealthSection: React.FC = () => {
                           ? 'bg-emerald-100 text-emerald-800'
                           : 'bg-amber-100 text-amber-900'
                       }`}>
-                        {isCompleted ? '✓ Completed (जांच पूरी)' : '⏰ Upcoming (प्रतीक्षित)'}
+                        {isCompleted ? '✓ Completed' : '⏰ Upcoming'}
                       </span>
                     </div>
                   </div>
@@ -972,7 +972,7 @@ export const FamilyHealthSection: React.FC = () => {
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700">person_add</span>
-                Add Family Member (नया सदस्य जोड़ें)
+                Add Family Member
               </h3>
               <button
                 type="button"
@@ -985,7 +985,7 @@ export const FamilyHealthSection: React.FC = () => {
 
             <form onSubmit={handleCreateMember} className="space-y-3.5 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Full Name (पूरा नाम) *</label>
+                <label className="font-bold text-slate-700 block mb-1">Full Name *</label>
                 <input
                   type="text"
                   required
@@ -998,24 +998,24 @@ export const FamilyHealthSection: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Relation (रिश्ता)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Relation</label>
                   <select
                     value={newMemberForm.relation}
                     onChange={(e) => setNewMemberForm({ ...newMemberForm, relation: e.target.value as any })}
                     className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
                   >
-                    <option value="Self">Self (स्वयं)</option>
-                    <option value="Spouse">Spouse (पति / पत्नी)</option>
-                    <option value="Mother">Mother (माताजी)</option>
-                    <option value="Father">Father (पिताजी)</option>
-                    <option value="Child">Child (बच्चा / संतान)</option>
-                    <option value="Other">Other (अन्य)</option>
+                    <option value="Self">Self</option>
+                    <option value="Spouse">Spouse</option>
+                    <option value="Mother">Mother</option>
+                    <option value="Father">Father</option>
+                    <option value="Child">Child</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
 
                 {/* Non-Negative Age Field with Strict Bounds */}
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Age (उम्र - Positive Only) *</label>
+                  <label className="font-bold text-slate-700 block mb-1">Age (Positive Only) *</label>
                   <input
                     type="number"
                     min="0"
@@ -1045,19 +1045,19 @@ export const FamilyHealthSection: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Gender (लिंग)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Gender</label>
                   <select
                     value={newMemberForm.gender}
                     onChange={(e) => setNewMemberForm({ ...newMemberForm, gender: e.target.value as any })}
                     className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
                   >
-                    <option value="Female">Female (महिला)</option>
-                    <option value="Male">Male (पुरुष)</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
                     <option value="Other">Other</option>
                   </select>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Blood Group (रक्त समूह)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Blood Group</label>
                   <input
                     type="text"
                     placeholder="e.g. B+, O+, AB+"
@@ -1069,7 +1069,7 @@ export const FamilyHealthSection: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Contact Phone Number (मोबाइल नंबर)</label>
+                <label className="font-bold text-slate-700 block mb-1">Contact Phone Number</label>
                 <input
                   type="tel"
                   placeholder="e.g. +91 98765 43210"
@@ -1080,7 +1080,7 @@ export const FamilyHealthSection: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Chronic Illnesses (पुरानी बीमारी, यदि कोई हो)</label>
+                <label className="font-bold text-slate-700 block mb-1">Chronic Illnesses (if any)</label>
                 <input
                   type="text"
                   placeholder="e.g. Diabetes, High BP, Asthma"
@@ -1102,7 +1102,7 @@ export const FamilyHealthSection: React.FC = () => {
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm"
                 >
-                  Save Member (सुरक्षित करें)
+                  Save Member
                 </button>
               </div>
             </form>
@@ -1119,7 +1119,7 @@ export const FamilyHealthSection: React.FC = () => {
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700">document_scanner</span>
-                Prescription Slip Scanner & Entry (दवाई पर्ची स्कैनर)
+                Prescription Slip Scanner & Entry
               </h3>
               <button
                 type="button"
@@ -1195,7 +1195,7 @@ export const FamilyHealthSection: React.FC = () => {
             <form onSubmit={handleCreatePrescription} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Doctor Name (डॉक्टर का नाम) *</label>
+                  <label className="font-bold text-slate-700 block mb-1">Doctor Name *</label>
                   <input
                     type="text"
                     required
@@ -1206,7 +1206,7 @@ export const FamilyHealthSection: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Clinic / Hospital (अस्पताल या क्लीनिक)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Clinic / Hospital</label>
                   <input
                     type="text"
                     placeholder="e.g. Civil Hospital Amravati"
@@ -1219,7 +1219,7 @@ export const FamilyHealthSection: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Contact Phone Number (डॉक्टर / अस्पताल संपर्क)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Contact Phone Number</label>
                   <input
                     type="tel"
                     placeholder="e.g. +91 721 266 2300"
@@ -1229,7 +1229,7 @@ export const FamilyHealthSection: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Diagnosis (रोग / स्थिति)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Diagnosis</label>
                   <input
                     type="text"
                     placeholder="e.g. High BP & Diabetes Follow-up"
@@ -1244,7 +1244,7 @@ export const FamilyHealthSection: React.FC = () => {
               <div className="space-y-2 pt-1 border-t border-slate-100">
                 <div className="flex items-center justify-between">
                   <label className="font-bold text-slate-700 uppercase tracking-wider text-[11px]">
-                    Prescribed Medicines (पहचानी गई दवाइयां - संपादित करें)
+                    Prescribed Medicines (Editable)
                   </label>
                   <button
                     type="button"
@@ -1252,7 +1252,7 @@ export const FamilyHealthSection: React.FC = () => {
                     className="text-teal-700 hover:text-teal-900 font-bold text-xs flex items-center gap-1 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-sm">add_circle</span>
-                    + Add Medicine (दवाई जोड़ें)
+                    + Add Medicine
                   </button>
                 </div>
 
@@ -1319,7 +1319,7 @@ export const FamilyHealthSection: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Ordered Diagnostic Tests (जांच के आदेश)</label>
+                <label className="font-bold text-slate-700 block mb-1">Ordered Diagnostic Tests</label>
                 <input
                   type="text"
                   placeholder="e.g. Fasting Sugar, ECG, Lipid Profile"
@@ -1352,7 +1352,7 @@ export const FamilyHealthSection: React.FC = () => {
                   type="submit"
                   className="px-5 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm cursor-pointer active:scale-95 transition"
                 >
-                  Save Prescription (पर्ची सुरक्षित करें)
+                  Save Prescription
                 </button>
               </div>
             </form>
@@ -1369,7 +1369,7 @@ export const FamilyHealthSection: React.FC = () => {
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700">science</span>
-                Diagnostic Lab Report Scanner & Entry (जांच रिपोर्ट स्कैनर)
+                Diagnostic Lab Report Scanner & Entry
               </h3>
               <button
                 type="button"
@@ -1444,7 +1444,7 @@ export const FamilyHealthSection: React.FC = () => {
             <form onSubmit={handleCreateReport} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Test Name (जांच का नाम) *</label>
+                  <label className="font-bold text-slate-700 block mb-1">Test Name *</label>
                   <input
                     type="text"
                     required
@@ -1455,7 +1455,7 @@ export const FamilyHealthSection: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Lab / Diagnostic Center (प्रयोगशाला)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Lab / Diagnostic Center</label>
                   <input
                     type="text"
                     placeholder="e.g. Civil Hospital Pathology Lab"
@@ -1468,29 +1468,29 @@ export const FamilyHealthSection: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Category (प्रकार)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Category</label>
                   <select
                     value={newReportForm.category}
                     onChange={(e) => setNewReportForm({ ...newReportForm, category: e.target.value as any })}
                     className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
                   >
-                    <option value="BLOOD">Blood Test (रक्त जांच)</option>
-                    <option value="CARDIAC">Cardiac ECG (ईसीजी)</option>
-                    <option value="IMAGING">X-Ray / Scan (एक्स-रे)</option>
-                    <option value="URINE">Urine Routine (पेशाब जांच)</option>
+                    <option value="BLOOD">Blood Test</option>
+                    <option value="CARDIAC">Cardiac ECG</option>
+                    <option value="IMAGING">X-Ray / Scan</option>
+                    <option value="URINE">Urine Routine</option>
                     <option value="OTHER">Other</option>
                   </select>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Result Status (स्थिति)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Result Status</label>
                   <select
                     value={newReportForm.summaryStatus}
                     onChange={(e) => setNewReportForm({ ...newReportForm, summaryStatus: e.target.value as any })}
                     className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800"
                   >
-                    <option value="NORMAL">🟢 Normal (सामान्य)</option>
-                    <option value="ATTENTION">🟡 Attention Needed (ध्यान दें)</option>
-                    <option value="CRITICAL">🔴 Critical (गंभीर)</option>
+                    <option value="NORMAL">🟢 Normal</option>
+                    <option value="ATTENTION">🟡 Attention Needed</option>
+                    <option value="CRITICAL">🔴 Critical</option>
                   </select>
                 </div>
                 <div>
@@ -1509,7 +1509,7 @@ export const FamilyHealthSection: React.FC = () => {
               <div className="space-y-2 pt-1 border-t border-slate-100">
                 <div className="flex items-center justify-between">
                   <label className="font-bold text-slate-700 uppercase tracking-wider text-[11px]">
-                    Test Parameters & Observed Values (पैरामीटर और परिणाम)
+                    Test Parameters & Observed Values
                   </label>
                   <button
                     type="button"
@@ -1517,7 +1517,7 @@ export const FamilyHealthSection: React.FC = () => {
                     className="text-teal-700 hover:text-teal-900 font-bold text-xs flex items-center gap-1 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-sm">add_circle</span>
-                    + Add Parameter (पैरामीटर जोड़ें)
+                    + Add Parameter
                   </button>
                 </div>
 
@@ -1557,7 +1557,7 @@ export const FamilyHealthSection: React.FC = () => {
                             checked={param.isAbnormal || false}
                             onChange={(e) => handleUpdateParameterRow(idx, 'isAbnormal', e.target.checked)}
                           />
-                          <span>Abnormal / Out of Range (असामान्य)</span>
+                          <span>Abnormal / Out of Range</span>
                         </label>
                         {reportKeyValuesList.length > 1 && (
                           <button
@@ -1577,7 +1577,7 @@ export const FamilyHealthSection: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Doctor Remarks (डॉक्टर की टिप्पणी)</label>
+                <label className="font-bold text-slate-700 block mb-1">Doctor Remarks</label>
                 <input
                   type="text"
                   placeholder="e.g. Normal findings, repeat test in 30 days"
@@ -1599,7 +1599,7 @@ export const FamilyHealthSection: React.FC = () => {
                   type="submit"
                   className="px-5 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm cursor-pointer active:scale-95 transition"
                 >
-                  Save Report (रिपोर्ट सुरक्षित करें)
+                  Save Report
                 </button>
               </div>
             </form>
@@ -1614,7 +1614,7 @@ export const FamilyHealthSection: React.FC = () => {
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700">calendar_add_on</span>
-                Schedule Routine Check-up (जांच तय करें)
+                Schedule Routine Check-up
               </h3>
               <button
                 type="button"
@@ -1627,7 +1627,7 @@ export const FamilyHealthSection: React.FC = () => {
 
             <form onSubmit={handleCreateCheckup} className="space-y-3.5 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Check-up Title (जांच का विषय) *</label>
+                <label className="font-bold text-slate-700 block mb-1">Check-up Title *</label>
                 <input
                   type="text"
                   required
@@ -1640,7 +1640,7 @@ export const FamilyHealthSection: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Date (तारीख) *</label>
+                  <label className="font-bold text-slate-700 block mb-1">Date *</label>
                   <input
                     type="text"
                     placeholder="e.g. 15 Nov 2026"
@@ -1650,15 +1650,15 @@ export const FamilyHealthSection: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Visit Type (प्रकार)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Visit Type</label>
                   <select
                     value={newCheckupForm.type}
                     onChange={(e) => setNewCheckupForm({ ...newCheckupForm, type: e.target.value as any })}
                     className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-teal-700 text-slate-800"
                   >
-                    <option value="ASHA_HOME_VISIT">ASHA Home Visit (घर पर मुलाकात)</option>
-                    <option value="PHC_VISIT">PHC Visit (स्वास्थ्य केंद्र)</option>
-                    <option value="SPECIALIST_CLINIC">Hospital Clinic (अस्पताल)</option>
+                    <option value="ASHA_HOME_VISIT">ASHA Home Visit</option>
+                    <option value="PHC_VISIT">PHC Visit</option>
+                    <option value="SPECIALIST_CLINIC">Hospital Clinic</option>
                   </select>
                 </div>
               </div>
@@ -1675,7 +1675,7 @@ export const FamilyHealthSection: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Instructions / Notes (टिप्पणी)</label>
+                <label className="font-bold text-slate-700 block mb-1">Instructions / Notes</label>
                 <input
                   type="text"
                   placeholder="e.g. Fasting before test, keep BP log ready"
@@ -1697,7 +1697,7 @@ export const FamilyHealthSection: React.FC = () => {
                   type="submit"
                   className="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold shadow-sm cursor-pointer"
                 >
-                  Schedule (तय करें)
+                  Schedule Check-up
                 </button>
               </div>
             </form>
@@ -1713,8 +1713,8 @@ export const FamilyHealthSection: React.FC = () => {
               <div className="flex items-center gap-2.5">
                 <img src="/logo.png" alt="Logo" className="w-9 h-9 object-contain rounded-lg" />
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">National Rural Health Card (स्वास्थ्य पत्र)</h3>
-                  <p className="text-[11px] text-slate-500">Ilaaj Track • Government of India Ayushman Linked</p>
+                  <h3 className="text-sm font-bold text-slate-900">National Rural Health Card</h3>
+                  <p className="text-[11px] text-slate-500">Ilaaj Track • Rural Care Continuity Network</p>
                 </div>
               </div>
               <button
@@ -1778,7 +1778,7 @@ export const FamilyHealthSection: React.FC = () => {
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-sm cursor-pointer"
               >
                 <span className="material-symbols-outlined text-base">print</span>
-                Print Health Slip (प्रिंट करें)
+                Print Health Slip
               </button>
             </div>
           </div>

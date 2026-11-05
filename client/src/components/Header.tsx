@@ -28,19 +28,14 @@ export const Header: React.FC<HeaderProps> = ({ mobileMenuOpen, onToggleMobileMe
 
           <img
             src="/logo.png"
-            alt="Ilaaj Track Official Logo"
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-contain shadow-xs border border-teal-100 bg-white shrink-0"
+            alt="Ilaaj Track Logo"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-contain shadow-xs border border-teal-100 bg-white shrink-0"
           />
           <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-none truncate">
-                Ilaaj Track
-              </span>
-              <span className="hidden xs:inline-block px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-teal-100 text-teal-800 shrink-0">
-                ईलाज ट्रैक
-              </span>
-            </div>
-            <span className="text-[10px] sm:text-xs font-medium text-slate-500 mt-0.5 truncate">
+            <span className="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-none font-outfit truncate">
+              Ilaaj<span className="text-teal-700"> Track</span>
+            </span>
+            <span className="text-[11px] sm:text-xs font-medium text-slate-500 mt-1 truncate">
               Rural Care Continuity
             </span>
           </div>

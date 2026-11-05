@@ -20,7 +20,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="font-semibold text-teal-100">National Rural Health Referral Network (राष्ट्रीय ग्रामीण रेफरल नेटवर्क)</span>
+            <span className="font-semibold text-teal-100">National Rural Health Referral Network</span>
             <span className="hidden md:inline text-teal-300">• Melghat Pilot Corridor Active</span>
           </div>
 
@@ -33,7 +33,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <span>Emergency 108 Toll-Free</span>
             </a>
             <span className="hidden sm:inline text-teal-300/60">|</span>
-            <span className="hidden sm:inline text-[11px] text-teal-200">ABDM & MoHFW Guideline Aligned</span>
+            <span className="hidden sm:inline text-[11px] text-teal-200">24/7 National Emergency Referral Corridor</span>
           </div>
         </div>
       </div>
@@ -44,24 +44,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           
           {/* Logo & Brand Identity */}
           <div className="flex items-center gap-3.5">
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-2xl blur-xs opacity-30 group-hover:opacity-60 transition duration-300"></div>
-              <img
-                src="/logo.png"
-                alt="Ilaaj Track Official Emblem"
-                className="relative w-11 h-11 rounded-xl object-contain bg-white p-1 shadow-sm border border-teal-100"
-              />
-            </div>
+            <img
+              src="/logo.png"
+              alt="Ilaaj Track Logo"
+              className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl object-contain bg-white p-0.5 shadow-xs border border-teal-100"
+            />
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-extrabold tracking-tight text-slate-900 font-outfit">
-                  Ilaaj<span className="text-teal-700">Track</span>
-                </span>
-                <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-md bg-teal-50 text-teal-800 border border-teal-200/80">
-                  इलाज ट्रैक
-                </span>
-              </div>
-              <span className="text-[11px] text-slate-500 font-medium leading-none mt-0.5">
+              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-outfit leading-none">
+                Ilaaj<span className="text-teal-700"> Track</span>
+              </span>
+              <span className="text-xs text-slate-500 font-medium tracking-wide mt-1">
                 AI Closed-Loop Referral & Care Continuity
               </span>
             </div>
@@ -115,29 +107,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* Left Column: Vision & Primary Actions */}
             <div className="lg:col-span-7 space-y-6 text-left">
               
-              {/* Trust Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 border border-teal-200/90 text-teal-900 text-xs font-semibold shadow-2xs">
-                <span className="material-symbols-outlined text-teal-700 text-sm">verified</span>
-                <span>Ayushman Bharat Digital Mission (ABDM) Compatible</span>
-                <span className="text-teal-400">•</span>
-                <span className="text-teal-700">ICMR Protocol</span>
-              </div>
-
               {/* Main Headline */}
-              <div className="space-y-2">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+              <div className="space-y-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold text-slate-900 tracking-tight leading-[1.12]">
                   Never Turn A Rural Patient Away From Critical Care.
                 </h1>
-                <p className="text-lg sm:text-xl font-bold text-teal-700">
-                  भारत का पहला एआई क्लोज्ड-लूप रेफरल व केयर नेटवर्क
+                <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl font-normal">
+                  When a rural pregnant mother or emergency patient needs urgent care, paper slips send them on blind 60km journeys to overcrowded hospitals.
+                  <strong className="text-slate-900 font-semibold"> Ilaaj Track verifies doctor duty, ICU beds, and diagnostic equipment uptime before travel</strong>, reserves casualty slots en route, and coordinates post-discharge recovery with the village health worker.
                 </p>
               </div>
-
-              {/* Core Description */}
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-                When a rural pregnant mother or chest-pain elder needs secondary care, paper slips send them on blind 60km journeys to overcrowded hospitals.
-                <strong className="text-slate-900"> Ilaaj Track verifies doctor duty, ICU beds, and ECG machine uptime *before* travel</strong>, reserves casualty slots en route, and hands care back to the village ASHA after discharge.
-              </p>
 
               {/* Dual Portal Gateway Selection Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -154,7 +133,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-base font-bold text-slate-900">Patient & Family Portal</h3>
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">नागरिक</span>
                       </div>
                       <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                         Store doctor slips, scan handwritten prescriptions via Gemini Vision OCR, track lab tests & ASHA home visits.
@@ -179,7 +157,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="text-base font-bold text-slate-900">ASHA & Medical Staff</h3>
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">चिकित्सा कर्मी</span>
                       </div>
                       <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                         Voice CDSS triage in Hindi/Marathi, dynamic Haversine ambulance routing, casualty pre-arrival gate & DHO telemetry.
@@ -233,8 +210,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </div>
 
                   <div className="space-y-1">
-                    <div className="text-sm font-extrabold text-slate-900 tracking-tight">
-                      Official Emblem • इलाज ट्रैक
+                    <div className="text-base font-extrabold text-slate-900 tracking-tight">
+                      Ilaaj Track Official Emblem
                     </div>
                     <p className="text-xs text-slate-500 max-w-xs">
                       Connecting Village ASHA, 108 Emergency Transit Corridor & District Tertiary Care
@@ -385,7 +362,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 1
               </div>
               <h3 className="text-sm font-bold text-slate-900">
-                Village Voice Intake (आवाज़ दाखिला)
+                Village Voice Intake & Clinical CDSS
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
                 Village ASHA Worker speaks symptoms in Hindi or Marathi. Groq Whisper & Gemini extract vitals, ICD-10 condition, and assign RED/AMBER urgency.
@@ -550,8 +527,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 className="w-10 h-10 rounded-xl bg-white p-1 object-contain"
               />
               <div>
-                <span className="text-base font-bold text-white block">Ilaaj Track (ईलाज ट्रैक)</span>
-                <span className="text-[11px] text-slate-500">Government of India • Ministry of Health & Family Welfare Guidelines</span>
+                <span className="text-base font-bold text-white block">Ilaaj Track</span>
+                <span className="text-[11px] text-slate-500">National Healthcare Referral & Care Continuity Network</span>
               </div>
             </div>
 

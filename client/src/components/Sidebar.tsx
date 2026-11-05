@@ -17,31 +17,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'family',
       title: 'Family Health Vault',
-      subtitle: 'परिवार स्वास्थ्य & रिपोर्ट्स',
+      subtitle: 'Health Records & Rx OCR',
       icon: 'family_restroom'
     },
     {
       id: 'triage',
       title: 'Voice & Intake',
-      subtitle: 'रोगी दाखिला और आवाज़',
+      subtitle: 'Voice CDSS & Slip Triage',
       icon: 'mic'
     },
     {
       id: 'map',
       title: 'Care & Transit',
-      subtitle: 'एम्बुलेंस ट्रैकिंग & Reroute',
+      subtitle: 'GPS Corridor & Reroute',
       icon: 'local_shipping'
     },
     {
       id: 'hospital',
       title: 'Hospital Handover',
-      subtitle: 'अस्पताल हैंडओवर & Follow-up',
+      subtitle: 'Casualty Gate & Handback',
       icon: 'domain_verification'
     },
     {
       id: 'telemetry',
       title: 'District Dashboard',
-      subtitle: 'जिला सांख्यिकी & Radar',
+      subtitle: 'DHO Telemetry Radar',
       icon: 'analytics'
     }
   ];

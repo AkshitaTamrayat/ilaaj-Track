@@ -47,7 +47,7 @@ export const DynamicMapSection: React.FC<DynamicMapSectionProps> = ({ facilities
           />
           <div>
             <h1 className="text-xl font-bold text-slate-900 leading-tight">
-              Care & Transit — Dynamic Reroute Engine (एम्बुलेंस ट्रैकिंग)
+              Care & Transit — Dynamic Reroute Engine
             </h1>
             <p className="text-xs text-slate-500">
               Live GPS Transit Corridor • 6-Factor Facility Verification • Real-time Haversine Auto-Reroute
@@ -73,7 +73,7 @@ export const DynamicMapSection: React.FC<DynamicMapSectionProps> = ({ facilities
               ? 'Calculating Spatial Haversine Matrix...'
               : isRerouted
               ? 'Reset District Hospital Telemetry'
-              : 'Simulate District Hospital ICU 100% (अस्पताल जाम सिमुलेशन)'}
+              : 'Simulate District Hospital ICU 100% (Emergency Jam)'}
           </span>
         </button>
       </div>

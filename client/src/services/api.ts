@@ -6,14 +6,14 @@ const API_BASE = rawBase.endsWith('/api') ? rawBase : `${rawBase.replace(/\/$/, 
 const FALLBACK_FAMILY_MEMBERS: FamilyMember[] = [
   {
     id: 'fam-ramesh',
-    name: 'Ramesh Patil (रमेश पाटिल)',
+    name: 'Ramesh Patil',
     relation: 'Self',
     age: 52,
     gender: 'Male',
     bloodGroup: 'B+',
     abhaId: '91-4432-8871-0921',
     village: 'Semadoh, Melghat Block',
-    chronicConditions: ['Hypertension (उच्च रक्तचाप)', 'Type-2 Diabetes (मधुमेह)'],
+    chronicConditions: ['Hypertension', 'Type-2 Diabetes'],
     prescriptions: [
       {
         id: 'rx-ramesh-1',
@@ -34,7 +34,7 @@ const FALLBACK_FAMILY_MEMBERS: FamilyMember[] = [
       {
         id: 'rep-ramesh-1',
         date: '25 Oct 2026',
-        testName: 'Fasting Blood Sugar & Lipid Profile (रक्त शर्करा जांच)',
+        testName: 'Fasting Blood Sugar & Lipid Profile',
         category: 'BLOOD',
         facilityName: 'Amravati District Hospital Laboratory',
         summaryStatus: 'ATTENTION',
@@ -51,7 +51,7 @@ const FALLBACK_FAMILY_MEMBERS: FamilyMember[] = [
       {
         id: 'chk-ramesh-1',
         date: '08 Nov 2026',
-        title: 'Morning Fasting Sugar & BP Check (घर पर जांच)',
+        title: 'Morning Fasting Sugar & BP Check',
         facilityOrAsha: 'Kavita Meshram (Village ASHA Worker #7702)',
         status: 'UPCOMING',
         type: 'ASHA_HOME_VISIT',
@@ -61,14 +61,14 @@ const FALLBACK_FAMILY_MEMBERS: FamilyMember[] = [
   },
   {
     id: 'fam-kamla',
-    name: 'Kamla Devi Patil (कमला देवी पाटिल - माताजी)',
+    name: 'Kamla Devi Patil',
     relation: 'Mother',
     age: 74,
     gender: 'Female',
     bloodGroup: 'O+',
     abhaId: '91-1029-4481-7734',
     village: 'Semadoh, Melghat Block',
-    chronicConditions: ['Bilateral Knee Osteoarthritis (गठिया)', 'Hypertension (उच्च रक्तचाप)'],
+    chronicConditions: ['Bilateral Knee Osteoarthritis', 'Hypertension'],
     prescriptions: [
       {
         id: 'rx-kamla-1',
@@ -88,7 +88,7 @@ const FALLBACK_FAMILY_MEMBERS: FamilyMember[] = [
       {
         id: 'rep-kamla-1',
         date: '15 Oct 2026',
-        testName: 'Digital X-Ray Bilateral Knees AP & Lateral (घुटने का एक्स-रे)',
+        testName: 'Digital X-Ray Bilateral Knees AP & Lateral',
         category: 'IMAGING',
         facilityName: 'Achalpur Sub-District Hospital Imaging Unit',
         summaryStatus: 'ATTENTION',
@@ -102,7 +102,7 @@ const FALLBACK_FAMILY_MEMBERS: FamilyMember[] = [
       {
         id: 'chk-kamla-1',
         date: '10 Nov 2026',
-        title: 'Monthly Knee Mobility & BP Check (घर पर मुलाकात)',
+        title: 'Monthly Knee Mobility & BP Check',
         facilityOrAsha: 'Kavita Meshram (ASHA Worker)',
         status: 'UPCOMING',
         type: 'ASHA_HOME_VISIT',

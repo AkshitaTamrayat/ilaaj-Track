@@ -2,9 +2,9 @@
   <img src="client/public/logo.png" width="220" alt="Ilaaj Track Official Emblem" />
 </p>
 
-# 🏥 Ilaaj Track (इलाज ट्रैक)
+# 🏥 Ilaaj Track
 > **AI-Orchestrated Closed-Loop Healthcare Referral & Care Continuity Platform for Rural Communities**  
-> *भारत का पहला एआई क्लोज्ड-लूप रेफरल व केयर नेटवर्क — अस्पताल पहुंचने से पहले बेड, डॉक्टर व जांच की पुष्टि*
+> *Closing the rural referral gap — verifying doctor duty, ICU beds, and diagnostics before patient travel.*
 
 <p align="center">
   <a href="https://ijt-ai.antideploy.app"><img src="https://img.shields.io/badge/Live%20Platform-ijt--ai.antideploy.app-0f766e?style=for-the-badge&logo=cloudflare&logoColor=white" alt="Live Platform" /></a>

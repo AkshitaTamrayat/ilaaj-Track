@@ -33,35 +33,30 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
     {
       id: 'triage' as const,
       label: 'Voice & Intake',
-      hiLabel: 'रोगी दाखिला',
       icon: 'mic',
       description: 'Voice CDSS & Slip OCR'
     },
     {
       id: 'map' as const,
       label: 'Care & Transit',
-      hiLabel: 'एम्बुलेंस ट्रैकिंग',
       icon: 'local_shipping',
       description: 'Dynamic GPS & Reroute'
     },
     {
       id: 'hospital' as const,
       label: 'Casualty Handover',
-      hiLabel: 'अस्पताल हैंडओवर',
       icon: 'domain_verification',
       description: 'Pre-Arrival & ASHA Handback'
     },
     {
       id: 'telemetry' as const,
       label: 'DHO Radar',
-      hiLabel: 'जिला सांख्यिकी',
       icon: 'analytics',
       description: 'Equipment Uptime Heatmap'
     },
     {
       id: 'community' as const,
       label: 'Community Locker',
-      hiLabel: 'समुदाय स्वास्थ्य खाता',
       icon: 'family_restroom',
       description: 'Village Patient Slips'
     }
@@ -96,11 +91,11 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
             />
             <div className="flex flex-col text-left">
               <div className="flex items-center gap-2">
-                <span className="text-base font-extrabold text-slate-900 leading-tight">
-                  Ilaaj<span className="text-teal-700">Track</span>
+                <span className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight font-outfit">
+                  Ilaaj<span className="text-teal-700"> Track</span>
                 </span>
                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-teal-50 text-teal-800 border border-teal-200">
-                  Clinical & Staff Portal • चिकित्सा कर्मी
+                  Clinical & Staff Portal
                 </span>
               </div>
               <span className="text-[11px] text-slate-500 font-medium">
@@ -172,7 +167,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                   <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg object-contain" />
                   <div>
                     <span className="font-bold text-sm text-slate-900 block leading-tight">Clinical Portal</span>
-                    <span className="text-[10px] text-teal-700">चिकित्सा कर्मी</span>
+                    <span className="text-[10px] text-teal-700 font-medium">Melghat Corridor</span>
                   </div>
                 </div>
                 <button
@@ -200,7 +195,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                       <div>
                         <div>{tab.label}</div>
                         <div className={`text-[10px] font-normal ${isActive ? 'text-teal-200' : 'text-slate-400'}`}>
-                          {tab.hiLabel}
+                          {tab.description}
                         </div>
                       </div>
                     </button>
@@ -246,9 +241,6 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
               >
                 <span className="material-symbols-outlined text-base">{tab.icon}</span>
                 <span>{tab.label}</span>
-                <span className={`text-[10px] hidden sm:inline ${isActive ? 'text-teal-200' : 'text-slate-400'}`}>
-                  ({tab.hiLabel})
-                </span>
               </button>
             );
           })}
@@ -318,8 +310,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
               >
                 <span className="material-symbols-outlined text-xl">{tab.icon}</span>
               </div>
-              <span className="text-[10px] leading-tight mt-0.5 font-semibold">{tab.label}</span>
-              <span className="text-[9px] text-slate-400 leading-none">{tab.hiLabel}</span>
+              <span className="text-[11px] leading-tight mt-1 font-semibold">{tab.label}</span>
             </button>
           );
         })}

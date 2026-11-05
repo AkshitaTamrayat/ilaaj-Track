@@ -25,8 +25,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-display font-extrabold text-xl tracking-tight text-white">
-                Ilaaj Track <span className="text-emerald-400 font-normal text-sm font-sans">(इलाज ट्रैक)</span>
+              <span className="font-display font-extrabold text-2xl tracking-tight text-white">
+                Ilaaj<span className="text-emerald-400"> Track</span>
               </span>
               <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>

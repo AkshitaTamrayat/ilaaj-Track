@@ -31,11 +31,11 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({
             />
             <div className="flex flex-col text-left">
               <div className="flex items-center gap-2">
-                <span className="text-base font-extrabold text-slate-900 leading-tight">
-                  Ilaaj<span className="text-teal-700">Track</span>
+                <span className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight font-outfit">
+                  Ilaaj<span className="text-teal-700"> Track</span>
                 </span>
                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
-                  Citizen Health Vault • नागरिक खाता
+                  Citizen Health Vault
                 </span>
               </div>
               <span className="text-[11px] text-slate-500 font-medium">
@@ -99,7 +99,7 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
               <h1 className="text-lg sm:text-xl font-bold">
-                नमस्ते, {user.name}
+                Welcome, {user.name}
               </h1>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-900/60 text-teal-100 border border-teal-600">
                 Verified Citizen Account
@@ -136,7 +136,7 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({
             }`}
           >
             <span className="material-symbols-outlined text-base">family_restroom</span>
-            <span>Family Health Vault & Slips (परिवार खाता व पर्चियां)</span>
+            <span>Family Health Vault & Slips</span>
           </button>
 
           <button
@@ -148,7 +148,7 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({
             }`}
           >
             <span className="material-symbols-outlined text-base">emergency</span>
-            <span>Emergency & Hospital Telemetry (अस्पताल सुविधा)</span>
+            <span>Emergency & Hospital Telemetry</span>
           </button>
         </div>
       </div>
@@ -203,7 +203,7 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({
 
               <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-0.5">
-                  <h3 className="text-sm font-bold text-rose-900">Immediate Ambulance Dispatch (मुफ्त 108 एम्बुलेंस)</h3>
+                  <h3 className="text-sm font-bold text-rose-900">Immediate Ambulance Dispatch (Toll-Free 108)</h3>
                   <p className="text-xs text-rose-700">Toll-free emergency dispatch with trained paramedic and oxygen support.</p>
                 </div>
                 <a
@@ -220,7 +220,7 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
                 <span className="material-symbols-outlined text-teal-700 text-lg">medical_information</span>
-                First-Aid Actions While Awaiting 108 Ambulance (प्राथमिक उपचार)
+                First-Aid Actions While Awaiting 108 Ambulance
               </h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">

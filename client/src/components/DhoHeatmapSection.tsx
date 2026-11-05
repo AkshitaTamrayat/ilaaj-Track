@@ -19,7 +19,7 @@ export const DhoHeatmapSection: React.FC<DhoHeatmapSectionProps> = ({ facilities
           />
           <div>
             <h1 className="text-xl font-bold text-slate-900 leading-tight">
-              District Health Officer (DHO) Live Telemetry Radar (जिला सांख्यिकी)
+              District Health Officer (DHO) Live Telemetry Radar
             </h1>
             <p className="text-xs text-slate-500">
               Real-time Administrative Governance • Diagnostic Equipment Downtime • Specialist Vacancy Heatmap

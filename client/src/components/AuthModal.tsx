@@ -34,7 +34,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const patientProfiles: UserProfile[] = [
     {
       id: 'fam-ramesh',
-      name: 'Ramesh Patil (रमेश पाटिल)',
+      name: 'Ramesh Patil',
       role: 'patient',
       title: 'Family Head & Patient',
       subTitle: 'Hypertension & Diabetes Care',
@@ -44,7 +44,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     },
     {
       id: 'fam-kamla',
-      name: 'Kamla Devi Patil (कमला देवी - माताजी)',
+      name: 'Kamla Devi Patil',
       role: 'patient',
       title: 'Senior Citizen Patient',
       subTitle: 'Osteoarthritis Management',
@@ -54,7 +54,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     },
     {
       id: 'fam-sunita',
-      name: 'Sunita Bai Patil (सुनीता बाई - पत्नी)',
+      name: 'Sunita Bai Patil',
       role: 'patient',
       title: 'Family Member',
       subTitle: 'Post-Op Care & Anemia Treatment',
@@ -67,7 +67,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const staffProfiles: UserProfile[] = [
     {
       id: 'staff-asha-sunita',
-      name: 'Sunita Devi (सुनीता देवी)',
+      name: 'Sunita Devi',
       role: 'staff',
       title: 'Lead Frontline ASHA Facilitator',
       subTitle: 'Melghat Tribal Block Health Sub-Center',
@@ -138,7 +138,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             />
             <div>
               <h2 className="text-lg font-bold leading-tight">Ilaaj Track Portal Sign-In</h2>
-              <p className="text-xs text-teal-100">सुरक्षित स्वास्थ्य लॉगिन • Choose Your Portal</p>
+              <p className="text-xs text-teal-100">Secure Healthcare Access • Choose Your Portal</p>
             </div>
           </div>
           <button
@@ -163,7 +163,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               }`}
             >
               <span className="material-symbols-outlined text-base">family_restroom</span>
-              <span>Patient / Family (नागरिक)</span>
+              <span>Patient & Family</span>
             </button>
             <button
               type="button"
@@ -175,7 +175,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               }`}
             >
               <span className="material-symbols-outlined text-base">health_and_safety</span>
-              <span>ASHA & Staff (चिकित्सा कर्मी)</span>
+              <span>ASHA & Clinical Staff</span>
             </button>
           </div>
         </div>

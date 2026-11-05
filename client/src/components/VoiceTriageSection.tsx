@@ -221,7 +221,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
           />
           <div>
             <h1 className="text-xl font-bold text-slate-900 leading-tight">
-              Emergency Patient Triage & Intake (रोगी दाखिला)
+              Emergency Patient Triage & Intake
             </h1>
             <p className="text-xs text-slate-500">
               Sub-Center Rampur • Attending ASHA Worker: Sunita Devi (#ASHA-902)
@@ -245,7 +245,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold uppercase tracking-wide border border-rose-200">
                 <span className="material-symbols-outlined text-sm">priority_high</span>
-                Urgent Referral • Priority 1 (अति आवश्यक)
+                Urgent Referral • Priority 1
               </span>
               <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
                 ABHA ID: 8921-4410-09
@@ -268,7 +268,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
             <div className="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200 text-slate-800">
               <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 mb-1">
                 <span className="material-symbols-outlined text-sm text-amber-700">report</span>
-                Reported Symptoms (मुख्य लक्षण):
+                Reported Symptoms:
               </div>
               <p className="text-sm font-medium text-slate-700 leading-relaxed">
                 Severe chest pain radiating to left shoulder and jaw, profuse cold sweating, difficulty breathing. Started ~95 minutes ago.
@@ -291,7 +291,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
                   <span className="text-xs font-medium text-slate-500 block">mmHg</span>
                 </div>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 w-fit">
-                  High (उच्च)
+                  High
                 </span>
               </div>
 
@@ -306,7 +306,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
                   <span className="text-xs font-medium text-slate-500 block">bpm</span>
                 </div>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-900 w-fit">
-                  Fast (तेज़)
+                  Fast
                 </span>
               </div>
 
@@ -321,7 +321,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
                   <span className="text-xs font-medium text-slate-500 block">Room Air</span>
                 </div>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-800 w-fit">
-                  Low (कम O2)
+                  Low
                 </span>
               </div>
 
@@ -346,7 +346,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
             <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
               <div className="flex items-center gap-2 text-emerald-900">
                 <span className="material-symbols-outlined text-emerald-700 text-xl">timer</span>
-                <span className="text-xs font-bold">Optimal Transfer Window (गोल्डन ऑवर):</span>
+                <span className="text-xs font-bold">Optimal Transfer Window (Golden Hour):</span>
                 <span className="text-xs font-extrabold text-emerald-800 bg-white px-2 py-0.5 rounded border border-emerald-200">
                   54 mins remaining
                 </span>
@@ -372,7 +372,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
                   <span className="material-symbols-outlined text-lg">mic</span>
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">Voice Symptom Intake (आवाज़ से विवरण)</h3>
+                  <h3 className="text-base font-bold text-slate-900">Voice Symptom Intake</h3>
                   <p className="text-xs text-slate-500">Live AI Speech Recognition + Groq Whisper Engine</p>
                 </div>
               </div>
@@ -474,7 +474,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                  Spoken Audio Transcript (बोली गई बातें)
+                  Spoken Audio Transcript
                 </label>
                 <button
                   type="button"
@@ -533,7 +533,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
             {/* Identified Clinical Findings */}
             <div className="space-y-2">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-                Identified Clinical Findings (पहचाने गए लक्षण)
+                Identified Clinical Findings
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-rose-900">
@@ -588,7 +588,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-slate-900">Doctor Prescription Slip</h3>
-                  <p className="text-xs text-slate-500">डॉक्टर की पर्ची स्कैन</p>
+                  <p className="text-xs text-slate-500">Gemini Vision OCR Digitized</p>
                 </div>
               </div>
               <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
@@ -682,7 +682,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
                 <span className="material-symbols-outlined text-xl">bookmark_added</span>
               </div>
               <h3 className="text-lg font-bold text-slate-900">
-                One-Trip Care Package (सिंगल-ट्रिप सुरक्षा टोकन)
+                One-Trip Care Package (Pre-Arrival Token)
               </h3>
               <span className="px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold">
                 TOKEN #OTB-8834
@@ -830,7 +830,7 @@ export const VoiceTriageSection: React.FC<VoiceTriageSectionProps> = ({ onReferr
               <span>
                 {dispatched
                   ? 'Dispatched! Proceeding to Live Tracking...'
-                  : 'Confirm Readiness & Dispatch Ambulance (एम्बुलेंस रवाना करें)'}
+                  : 'Confirm Readiness & Dispatch Ambulance'}
               </span>
             </button>
           </div>

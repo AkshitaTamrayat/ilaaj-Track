@@ -8,7 +8,7 @@ import type { Facility, Referral } from './types';
 
 const DEFAULT_PATIENT_USER: UserProfile = {
   id: 'fam-ramesh',
-  name: 'Ramesh Patil (रमेश पाटिल)',
+  name: 'Ramesh Patil',
   role: 'patient',
   title: 'Family Head & Patient',
   subTitle: 'Hypertension & Diabetes Care',
@@ -19,7 +19,7 @@ const DEFAULT_PATIENT_USER: UserProfile = {
 
 const DEFAULT_STAFF_USER: UserProfile = {
   id: 'staff-asha-sunita',
-  name: 'Sunita Devi (सुनीता देवी)',
+  name: 'Sunita Devi',
   role: 'staff',
   title: 'Lead Frontline ASHA Facilitator',
   subTitle: 'Melghat Tribal Block Health Sub-Center',
@@ -125,7 +125,7 @@ export function App() {
         />
       )}
 
-      {/* 2. Patient & Family Dashboard (नागरिक व परिवार पोर्टल) */}
+      {/* 2. Patient & Family Dashboard */}
       {currentView === 'patient' && (
         <PatientDashboard
           user={currentUser || DEFAULT_PATIENT_USER}
@@ -136,7 +136,7 @@ export function App() {
         />
       )}
 
-      {/* 3. Frontline ASHA & Medical Staff Dashboard (चिकित्सा कर्मी पोर्टल) */}
+      {/* 3. Frontline ASHA & Medical Staff Dashboard */}
       {currentView === 'staff' && (
         <StaffDashboard
           user={currentUser || DEFAULT_STAFF_USER}

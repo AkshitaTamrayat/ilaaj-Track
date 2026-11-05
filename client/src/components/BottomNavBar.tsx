@@ -10,31 +10,26 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, setActive
     {
       id: 'family',
       label: 'Family',
-      hiLabel: 'परिवार',
       icon: 'family_restroom'
     },
     {
       id: 'triage',
       label: 'Intake',
-      hiLabel: 'आवाज़',
       icon: 'mic'
     },
     {
       id: 'map',
       label: 'Transit',
-      hiLabel: 'ट्रैकिंग',
       icon: 'local_shipping'
     },
     {
       id: 'hospital',
       label: 'Handover',
-      hiLabel: 'अस्पताल',
       icon: 'domain_verification'
     },
     {
       id: 'telemetry',
       label: 'District',
-      hiLabel: 'जिला',
       icon: 'analytics'
     }
   ];
@@ -66,11 +61,8 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, setActive
                 {tab.icon}
               </span>
             </div>
-            <span className="text-[10px] leading-tight mt-0.5 font-semibold">
+            <span className="text-[11px] leading-tight mt-1 font-semibold">
               {tab.label}
-            </span>
-            <span className="text-[9px] text-slate-400 leading-none">
-              {tab.hiLabel}
             </span>
           </button>
         );

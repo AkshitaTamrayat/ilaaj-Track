@@ -41,7 +41,7 @@ export const CasualtySection: React.FC<CasualtySectionProps> = ({ referrals, onR
           />
           <div>
             <h1 className="text-xl font-bold text-slate-900 leading-tight">
-              Hospital Casualty Handover & Counter-Referral (अस्पताल हैंडओवर)
+              Hospital Casualty Handover & Counter-Referral
             </h1>
             <p className="text-xs text-slate-500">
               Pre-Arrival Triage Gate • Fast-Track Admission • Automated Village ASHA Post-Discharge Handback
